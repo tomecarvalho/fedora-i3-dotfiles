@@ -161,3 +161,9 @@ bar {
 
 # Gnome keyring
 exec --no-startup-id ~/.config/i3/scripts/gnome-keyring.sh
+
+# picom: Compositor
+exec_always --no-startup-id picom --config ~/.config/picom/picom.conf
+
+# autorandr: Automatically detect and apply monitor layouts
+exec_always --no-startup-id autorandr --change --default default
