@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Default: run all steps in order 1..5
+ALL_STEPS=(1 2 3 4 5 6 7)
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+step1() {
+  echo "1. Update packages"
+  sudo dnf up -y --refresh
+}
+
+step2() {
+  echo "2. Enable RPM Fusion Free and Nonfree"
+  sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+  sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+}
+
+step3() {
+  echo "3. Install DNF packages"
+  PKG_FILE="$SCRIPT_DIR/../packages/dnf.txt"
+
+  if [[ ! -f "$PKG_FILE" ]]; then
+    echo "Package list not found: $PKG_FILE" >&2
+    exit 1
+  fi
+
+  mapfile -t packages < <(grep -vE '^\s*($|#)' "$PKG_FILE")
+
+  echo "3. Installing ${#packages[@]} packages with dnf..."
+  sudo dnf install -y "${packages[@]}"
+}
+
+step4() {
+  echo "4. Enable Flathub"
+  flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+}
+
+step5() {
+  echo "5. Add VS Code repository"
+  sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+  echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\nautorefresh=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
+  echo "5. Install VS Code"
+  sudo dnf check-update
+  sudo dnf install -y code
+}
+
+step6() {
+  echo "6. Install oh-my-zsh"
+
+  if [[ -d "$HOME/.oh-my-zsh" ]]; then
+    echo "oh-my-zsh is already installed at $HOME/.oh-my-zsh"
+    return
+  fi
+
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+  # Remove the custom directory, because stow will replace it
+  rm -rf "$HOME/.oh-my-zsh/custom"
+}
+
+step7() {
+  echo "7. Make zsh the default shell"
+
+  if ! command -v zsh &> /dev/null; then
+    echo "zsh is not installed. Please install zsh first." >&2
+    exit 1
+  fi
+
+  chsh -s "$(command -v zsh)"
+}
+
+usage() {
+  cat <<EOF
+Usage: $0 [-s "1,2,3"]
+
+Options:
+  -s, --steps   Comma-separated list of step numbers to run. Steps will be run sequentially in numeric order (duplicates removed). Example: -s "1,3,5"
+  -h, --help    Show this help message
+EOF
+}
+
+# Parse args
+STEPS_ARG=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -s|--steps)
+      if [[ -n "${2-}" ]]; then
+        STEPS_ARG="$2"
+        shift 2
+        continue
+      else
+        echo "Error: --steps requires an argument" >&2
+        usage
+        exit 2
+      fi
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+# Build ordered list of steps to run
+declare -a RUN_STEPS=()
+if [[ -z "$STEPS_ARG" ]]; then
+  RUN_STEPS=("${ALL_STEPS[@]}")
+else
+  # split on commas, allow spaces
+  IFS=',' read -ra raw <<< "$STEPS_ARG"
+  for token in "${raw[@]}"; do
+    # trim whitespace
+    step=$(echo "$token" | xargs)
+    if [[ -z "$step" ]]; then
+      continue
+    fi
+    if ! [[ "$step" =~ ^[0-9]+$ ]]; then
+      echo "Invalid step: $step" >&2
+      exit 2
+    fi
+    RUN_STEPS+=("$step")
+  done
+  # sort numerically and deduplicate
+  if [[ ${#RUN_STEPS[@]} -gt 0 ]]; then
+    IFS=$'\n' read -r -d '' -a RUN_STEPS < <(printf "%s\n" "${RUN_STEPS[@]}" | sort -n -u && printf '\0')
+  fi
+fi
+
+# Dispatch
+for s in "${RUN_STEPS[@]}"; do
+  case "$s" in
+    1) step1 ;;
+    2) step2 ;;
+    3) step3 ;;
+    4) step4 ;;
+    5) step5 ;;
+    6) step6 ;;
+    7) step7 ;;
+    *) echo "Unknown step: $s" >&2; exit 3 ;;
+  esac
+done
