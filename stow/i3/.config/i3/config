@@ -166,6 +166,7 @@ bar {
 for_window [class=.*] border normal 1
 
 # Gnome keyring
+exec --no-startup-id dbus-update-activation-environment --all
 exec --no-startup-id ~/.config/i3/scripts/gnome-keyring.sh
 
 # picom: Compositor
