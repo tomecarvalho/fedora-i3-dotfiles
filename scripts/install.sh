@@ -1,25 +1,38 @@
 #!/usr/bin/env bash
 
+GREENCLIP_URL="https://github.com/erebe/greenclip/releases/download/v4.2/greenclip"
+
 set -euo pipefail
 
 # Default: run all steps in order 1..5
-ALL_STEPS=(1 2 3 4 5 6 7)
+ALL_STEPS=(1 2 3 4 5 6 7 8 9)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 step1() {
-  echo "1. Update packages"
-  sudo dnf up -y --refresh
+  echo "1. Add run permission to scripts"
+
+  STOW_DIR="$SCRIPT_DIR/../stow"
+
+  chmod +x "$STOW_DIR/i3/.config/i3/scripts/gnome-keyring.sh"
+  chmod +x "$STOW_DIR/rofi/.config/rofi/scripts/rofi-power-menu.sh"
+
+  echo "1. Run permission added to scripts"
 }
 
 step2() {
-  echo "2. Enable RPM Fusion Free and Nonfree"
+  echo "2. Update packages"
+  sudo dnf up -y --refresh
+}
+
+step3() {
+  echo "3. Enable RPM Fusion Free and Nonfree"
   sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
   sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 }
 
-step3() {
-  echo "3. Install DNF packages"
+step4() {
+  echo "4. Install DNF packages"
   PKG_FILE="$SCRIPT_DIR/../packages/dnf.txt"
 
   if [[ ! -f "$PKG_FILE" ]]; then
@@ -29,26 +42,26 @@ step3() {
 
   mapfile -t packages < <(grep -vE '^\s*($|#)' "$PKG_FILE")
 
-  echo "3. Installing ${#packages[@]} packages with dnf..."
+  echo "4. Installing ${#packages[@]} packages with dnf..."
   sudo dnf install -y "${packages[@]}"
 }
 
-step4() {
-  echo "4. Enable Flathub"
+step5() {
+  echo "5. Enable Flathub"
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
-step5() {
-  echo "5. Add VS Code repository"
+step6() {
+  echo "6. Add VS Code repository"
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
   echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\nautorefresh=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
-  echo "5. Install VS Code"
+  echo "6. Install VS Code"
   sudo dnf check-update
   sudo dnf install -y code
 }
 
-step6() {
-  echo "6. Install oh-my-zsh"
+step7() {
+  echo "7. Install oh-my-zsh"
 
   if [[ -d "$HOME/.oh-my-zsh" ]]; then
     echo "oh-my-zsh is already installed at $HOME/.oh-my-zsh"
@@ -61,8 +74,23 @@ step6() {
   rm -rf "$HOME/.oh-my-zsh/custom"
 }
 
-step7() {
-  echo "7. Make zsh the default shell"
+step8() {
+  echo "8. Install greenclip"
+
+  if command -v greenclip &> /dev/null; then
+    echo "greenclip is already installed"
+    return
+  fi
+
+  # Install for all users
+  GREENCLIP_PATH="/usr/bin/greenclip"
+  sudo curl -L -o "$GREENCLIP_PATH" "$GREENCLIP_URL"
+  sudo chmod +x "$GREENCLIP_PATH"
+  echo "greenclip installed to $GREENCLIP_PATH"
+}
+
+step9() {
+  echo "9. Make zsh the default shell"
 
   if ! command -v zsh &> /dev/null; then
     echo "zsh is not installed. Please install zsh first." >&2
@@ -144,6 +172,8 @@ for s in "${RUN_STEPS[@]}"; do
     5) step5 ;;
     6) step6 ;;
     7) step7 ;;
+    8) step8 ;;
+    9) step9 ;;
     *) echo "Unknown step: $s" >&2; exit 3 ;;
   esac
 done
