@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 GREENCLIP_URL="https://github.com/erebe/greenclip/releases/download/v4.2/greenclip"
+JETBRAINS_MONO_FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip"
+INTER_FONT_URL="https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
 
 set -euo pipefail
 
 # Default: run all steps in order 1..5
-ALL_STEPS=(1 2 3 4 5 6 7 8 9)
+ALL_STEPS=(1 2 3 4 5 6 7 8 9 10 11)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -100,6 +102,56 @@ step9() {
   chsh -s "$(command -v zsh)"
 }
 
+step10() {
+  echo "10. Install JetBrains Mono Nerd Font"
+
+  FONT_DIR="/usr/local/share/fonts/JetBrainsMonoNerdFont"
+
+  if fc-list | grep -q "JetBrainsMonoNerdFont"; then
+    echo "10. JetBrains Mono Nerd Font is already installed"
+    return
+  fi
+  
+  # Create the font directory, if needed
+  sudo mkdir -p "$FONT_DIR"
+
+  # Download into a temporary ZIP file, unzip, and clean up the temp file
+  TMP_ZIP="$(mktemp --suffix=.zip)"
+  curl -L -o "$TMP_ZIP" "$JETBRAINS_MONO_FONT_URL"
+  sudo unzip -o "$TMP_ZIP" -d "$FONT_DIR"
+  rm "$TMP_ZIP"
+
+  # Update font cache
+  sudo fc-cache -fv
+
+  echo "10. JetBrains Mono Nerd Font installed to $FONT_DIR"
+}
+
+step11() {
+  echo "11. Install Inter Font"
+
+  FONT_DIR="/usr/local/share/fonts/Inter"
+
+  if fc-list | grep -q "Inter"; then
+    echo "11. Inter Font is already installed"
+    return
+  fi
+  
+  # Create the font directory, if needed
+  sudo mkdir -p "$FONT_DIR"
+
+  # Download into a temporary ZIP file, unzip, and clean up the temp file
+  TMP_ZIP="$(mktemp --suffix=.zip)"
+  curl -L -o "$TMP_ZIP" "$INTER_FONT_URL"
+  sudo unzip -o "$TMP_ZIP" -d "$FONT_DIR"
+  rm "$TMP_ZIP"
+
+  # Update font cache
+  sudo fc-cache -fv
+
+  echo "11. Inter Font installed to $FONT_DIR"
+}
+
 usage() {
   cat <<EOF
 Usage: $0 [-s "1,2,3"]
@@ -174,6 +226,8 @@ for s in "${RUN_STEPS[@]}"; do
     7) step7 ;;
     8) step8 ;;
     9) step9 ;;
+    10) step10 ;;
+    11) step11 ;;
     *) echo "Unknown step: $s" >&2; exit 3 ;;
   esac
 done
