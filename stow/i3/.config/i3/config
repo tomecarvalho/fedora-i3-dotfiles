@@ -60,6 +60,9 @@ bindsym $mod+Shift+q kill
 # rofi launcher
 bindsym $mod+d exec --no-startup-id "rofi -show combi -combi-modi 'drun,run,ssh'"
 
+# rofi windows
+bindsym $mod+Tab exec --no-startup-id "rofi -show window"
+
 # rofi clipboard (greenclip)
 bindsym $mod+v exec --no-startup-id rofi -show clipboard
 
