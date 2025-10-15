@@ -3,6 +3,7 @@
 GREENCLIP_URL="https://github.com/erebe/greenclip/releases/download/v4.2/greenclip"
 JETBRAINS_MONO_FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip"
 INTER_FONT_URL="https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
+OH_MY_ZSH_INSTALL_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
 
 set -euo pipefail
 
@@ -67,13 +68,17 @@ step7() {
 
   if [[ -d "$HOME/.oh-my-zsh" ]]; then
     echo "oh-my-zsh is already installed at $HOME/.oh-my-zsh"
-    return
+  else
+    sh -c "$(curl -fsSL $OH_MY_ZSH_INSTALL_URL)"
+    # Remove the custom directory, because stow will replace it
+    rm -rf "$HOME/.oh-my-zsh/custom"
+    echo "7. [!] The rm command to remove ~/.oh-my-zsh/custom may be executed before oh-my-zsh finishes its installation. In that case, make sure to manually run 'rm -rf ~/.oh-my-zsh/custom' after this script completes."
   fi
 
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-  # Remove the custom directory, because stow will replace it
-  rm -rf "$HOME/.oh-my-zsh/custom"
+  # Install starship
+  if ! command -v starship &> /dev/null; then
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+  fi
 }
 
 step8() {
