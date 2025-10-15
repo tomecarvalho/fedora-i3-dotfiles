@@ -21,3 +21,6 @@ unset rc
 
 # gnome-keyring environment variables
 [ -f ~/.gnome-keyring-env ] && . ~/.gnome-keyring-env
+
+# Aliases
+[ -f ~/.aliases ] && . ~/.aliases

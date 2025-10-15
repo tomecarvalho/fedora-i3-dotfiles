@@ -21,6 +21,7 @@ rofi
 seahorse
 stow
 tmux
+xclip
 xrandr
 zoxide
 zsh
