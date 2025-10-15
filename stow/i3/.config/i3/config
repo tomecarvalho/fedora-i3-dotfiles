@@ -52,6 +52,12 @@ $xnsi nm-applet
 $xnsi dbus-update-activation-environment --all
 $xnsi ~/.config/i3/scripts/gnome-keyring.sh
 
+# dunst: Notifications
+$xnsi dunst
+
+# greenclip: Clipboard manager
+$xnsi greenclip daemon
+
 # picom: Compositor
 $xansi picom --config ~/.config/picom/picom.conf
 
