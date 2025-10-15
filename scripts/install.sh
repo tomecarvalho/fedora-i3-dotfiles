@@ -47,6 +47,9 @@ step4() {
 
   echo "4. Installing ${#packages[@]} packages with dnf..."
   sudo dnf install -y "${packages[@]}"
+
+  echo "4. Removing unnecessary packages"
+  sudo dnf rm -y xfce4-terminal
 }
 
 step5() {
