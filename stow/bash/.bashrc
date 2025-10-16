@@ -24,3 +24,6 @@ unset rc
 
 # Aliases
 [ -f ~/.aliases ] && . ~/.aliases
+
+# .xprofile
+[ -f ~/.xprofile ] && . ~/.xprofile

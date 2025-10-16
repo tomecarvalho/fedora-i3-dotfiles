@@ -19,3 +19,6 @@ ZSH_SYNTAX_HIGHLIGHTING="/usr/share/zsh-syntax-highlighting/zsh-syntax-highlight
 
 # starship.rs
 eval "$(starship init zsh)"
+
+# .xprofile
+[ -f ~/.xprofile ] && . ~/.xprofile
