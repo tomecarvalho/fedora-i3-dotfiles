@@ -1,0 +1,21 @@
+# https://github.com/a-schaefers/i3-wm-gruvbox-theme/blob/master/i3/config
+# Modified
+
+set $bg #282828
+set $red #cc241d
+set $green #98971a
+set $yellow #d79921
+set $blue #458588
+set $purple #b16286
+set $aqua #689d68
+set $gray #a89984
+set $darkgray #1d2021
+set $white #ebdbb2
+
+# target                title     bg    text   indicator border
+client.focused          $blue     $blue $white $purple   $blue
+client.focused_inactive $darkgray $bg   $gray  $gray     $darkgray
+client.unfocused        $darkgray $bg   $gray  $gray     $darkgray
+client.urgent           $red      $bg   $white $red      $red
+client.placeholder      $darkgray $bg   $gray  $gray     $darkgray
+client.background       $bg

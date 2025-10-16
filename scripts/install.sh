@@ -7,8 +7,7 @@ OH_MY_ZSH_INSTALL_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/
 
 set -euo pipefail
 
-# Default: run all steps in order 1..5
-ALL_STEPS=(1 2 3 4 5 6 7 8 9 10 11)
+ALL_STEPS=(1 2 3 4 5 6 7 8 9 10 11 12)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -163,6 +162,11 @@ step11() {
   echo "11. Inter Font installed to $FONT_DIR"
 }
 
+step12() {
+  echo "12. Set dark mode in gsettings"
+  gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+}
+
 usage() {
   cat <<EOF
 Usage: $0 [-s "1,2,3"]
@@ -239,6 +243,7 @@ for s in "${RUN_STEPS[@]}"; do
     9) step9 ;;
     10) step10 ;;
     11) step11 ;;
+    12) step12 ;;
     *) echo "Unknown step: $s" >&2; exit 3 ;;
   esac
 done
