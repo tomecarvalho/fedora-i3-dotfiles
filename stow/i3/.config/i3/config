@@ -67,6 +67,9 @@ $xansi autorandr --change --default default
 # redshift: Always-on night light
 $xnsi redshift -c ~/.config/redshift/redshift.conf -m randr
 
+# feh: Set wallpaper
+$xansi feh --bg-scale --no-fehbg ~/wallpapers/gruvbox-fedora-dark.png
+
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume $xnsi pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
