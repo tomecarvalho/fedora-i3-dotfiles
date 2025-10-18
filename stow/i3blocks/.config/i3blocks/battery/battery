@@ -16,6 +16,10 @@ use strict;
 use warnings;
 use utf8;
 
+# Ensure UTF-8 output for icons
+binmode STDOUT, ":utf8";
+binmode STDERR, ":utf8";
+
 my $acpi;
 my $status;
 my $percent;
@@ -24,6 +28,13 @@ my $full_text;
 my $short_text;
 my $bat_number = $ENV{BAT_NUMBER} || 0;
 my $label = $ENV{LABEL} || "";
+my $icon = '';
+
+# Color configuration via environment variables
+my $color_critical = $ENV{COLOR_CRITICAL} || "#FF0000";  # < 20%
+my $color_low = $ENV{COLOR_LOW} || "#FFAE00";            # 20-40%
+my $color_medium = $ENV{COLOR_MEDIUM} || "#FFF600";      # 40-60%
+my $color_good = $ENV{COLOR_GOOD} || "#A8FF00";          # 60-85%
 
 # read the first line of the "acpi" command output
 open (ACPI, "acpi -b 2>/dev/null| grep 'Battery $bat_number' |") or die;
@@ -41,12 +52,31 @@ elsif ($acpi !~ /: ([\w\s]+), (\d+)%/) {
 
 $status = $1;
 $percent = $2;
-$full_text = "$label$percent%";
+$full_text = '';
 
-if ($status eq 'Discharging') {
-	$full_text .= ' DIS';
-} elsif ($status eq 'Charging') {
-	$full_text .= ' CHR';
+sub discharging_icon_for_percent {
+	my ($p) = @_;
+	$p = 0 + $p; # numeric
+	$p = 100 if $p > 100;
+	# Map to nearest decile bucket (1-10 => 10, 11-20 => 20, ..., 91-100 => 100)
+	return "󰁺" if $p <= 10;  # 10
+	return "󰁻" if $p <= 20;  # 20
+	return "󰁼" if $p <= 30;  # 30
+	return "󰁽" if $p <= 40;  # 40
+	return "󰁾" if $p <= 50;  # 50
+	return "󰁿" if $p <= 60;  # 60
+	return "󰂀" if $p <= 70;  # 70
+	return "󰂁" if $p <= 80;  # 80
+	return "󰂂" if $p <= 90;  # 90
+	return "󰁹";              # 100
+}
+
+if ($status eq 'Charging') {
+	# Charging icon
+	$icon = "󰂄";
+} elsif ($status eq 'Discharging') {
+	# Discharging icon based on percentage
+	$icon = discharging_icon_for_percent($percent);
 } elsif ($status eq 'Unknown') {
 	open (AC_ADAPTER, "acpi -a |") or die;
 	$ac_adapt = <AC_ADAPTER>;
@@ -56,16 +86,26 @@ if ($status eq 'Discharging') {
 		$ac_adapt = $1;
 
 		if ($ac_adapt eq 'on-line') {
-			$full_text .= ' CHR';
+			$icon = "󰂄";
 		} elsif ($ac_adapt eq 'off-line') {
-			$full_text .= ' DIS';
+			$icon = discharging_icon_for_percent($percent);
 		}
+	}
+} else {
+	# For other statuses like Full/Not charging, choose icon based on percentage
+	if ($percent >= 100) {
+		$icon = "󰁹";
+	} else {
+		$icon = discharging_icon_for_percent($percent);
 	}
 }
 
+# Compose display strings: icon followed by percentage
+$full_text = "$label$icon $percent%";
 $short_text = $full_text;
 
-if ($acpi =~ /(\d\d:\d\d):/) {
+# Only show remaining time if discharging
+if ($status eq 'Discharging' && $acpi =~ /(\d\d:\d\d):/) {
 	$full_text .= " ($1)";
 }
 
@@ -77,13 +117,13 @@ print "$short_text\n";
 if ($status eq 'Discharging') {
 
 	if ($percent < 20) {
-		print "#FF0000\n";
+		print "$color_critical\n";
 	} elsif ($percent < 40) {
-		print "#FFAE00\n";
+		print "$color_low\n";
 	} elsif ($percent < 60) {
-		print "#FFF600\n";
+		print "$color_medium\n";
 	} elsif ($percent < 85) {
-		print "#A8FF00\n";
+		print "$color_good\n";
 	}
 
 	if ($percent < 5) {

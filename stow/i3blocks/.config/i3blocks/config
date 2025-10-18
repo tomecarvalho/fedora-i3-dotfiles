@@ -29,23 +29,23 @@ command=~/.config/i3blocks/$BLOCK_NAME/$BLOCK_NAME
 separator_block_width=15
 markup=none
 
-# Volume indicator
-#
-# The first parameter sets the step (and units to display)
-# The second parameter overrides the mixer selection
-# See the script for details.
-
+# Pipewire volume control
+# Displays volume and output device
+# Left click: toggle output device
+# Middle click: toggle mute
 [volume-pipewire]
 interval=1
 signal=1
 LONG_FORMAT="${SYMB} ${VOL}% [${NAME}]"
 
-# Battery indicator
-#
-# The battery instance defaults to 0.
+# Battery indicator (customised script)
+# Colour scheme: gruvbox-dark
 [battery]
-label=󰁹 
 interval=30
+COLOR_CRITICAL=#cc241d
+COLOR_LOW=#d79921
+COLOR_MEDIUM=#98971a
+COLOR_GOOD=#689d68
 
 # Date Time
 #
