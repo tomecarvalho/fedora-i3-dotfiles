@@ -50,11 +50,15 @@ COLOR_MEDIUM=#98971a
 COLOR_GOOD=#689d68
 
 # Time and date
+# Left click: cycle through timezones
+# Right click: launch calendar app (set via CALENDAR_APP env var)
 [time]
 interval=5
 STRFTIME_FORMAT=%H:%M %d/%m/%Y
 TZONES=$DEFAULT_TZ,UTC
 TZ_LABELS=,UTC
+# TODO: Choose a calendar app
+# CALENDAR_APP=
 
 # Generic media player support
 #

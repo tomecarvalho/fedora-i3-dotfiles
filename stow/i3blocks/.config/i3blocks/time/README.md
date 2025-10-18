@@ -34,3 +34,7 @@ E.g. you may want it to say "12:34 (US)" instead of "12:34 (America/Chicago)".
 Labels are allowed to be empty,
 in which case the script omits parentheses.
 For example, in the config above, the label for the default timezone is omitted.
+
+# Modifications
+
+- Added support for calendar app definition (`CALENDAR_APP` environment variable). The app is opened on right click.
