@@ -1,3 +1,4 @@
+acpi
 alacritty
 arandr
 autorandr
@@ -8,9 +9,9 @@ fuse
 fzf
 git
 gnome-keyring
+i3blocks
 lxappearance
 picom
-polybar
 python3
 qt5ct
 neovim

@@ -16,6 +16,8 @@ step1() {
 
   STOW_DIR="$SCRIPT_DIR/../stow"
 
+  chmod +x "$SCRIPT_DIR/secure-boot-key.sh"
+  chmod +x "$SCRIPT_DIR/nvidia-drivers.sh"
   chmod +x "$STOW_DIR/i3/.config/i3/scripts/gnome-keyring.sh"
   chmod +x "$STOW_DIR/rofi/.config/rofi/scripts/rofi-power-menu.sh"
 
