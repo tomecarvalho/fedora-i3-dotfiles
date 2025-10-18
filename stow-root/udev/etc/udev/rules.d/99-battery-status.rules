@@ -1,0 +1,2 @@
+ACTION=="change", SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="0", RUN+="/bin/sh -c 'sleep 1; /usr/bin/pkill -SIGRTMIN+2 i3blocks'"
+ACTION=="change", SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="1", RUN+="/bin/sh -c 'sleep 1; /usr/bin/pkill -SIGRTMIN+2 i3blocks'"

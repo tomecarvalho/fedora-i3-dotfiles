@@ -40,8 +40,10 @@ LONG_FORMAT="${SYMB} ${VOL}% [${NAME}]"
 
 # Battery indicator (customised script)
 # Colour scheme: gruvbox-dark
+# Related udev rule to trigger update on status change: /etc/udev/rules.d/99-battery-status.rules
 [battery]
-interval=30
+interval=60
+signal=2
 COLOR_CRITICAL=#cc241d
 COLOR_LOW=#d79921
 COLOR_MEDIUM=#98971a
