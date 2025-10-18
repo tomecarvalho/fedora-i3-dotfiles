@@ -49,11 +49,12 @@ COLOR_LOW=#d79921
 COLOR_MEDIUM=#98971a
 COLOR_GOOD=#689d68
 
-# Date Time
-#
+# Time and date
 [time]
-command=date '+%Y-%m-%d %H:%M:%S'
 interval=5
+STRFTIME_FORMAT=%H:%M %d/%m/%Y
+TZONES=$DEFAULT_TZ,UTC
+TZ_LABELS=,UTC
 
 # Generic media player support
 #
