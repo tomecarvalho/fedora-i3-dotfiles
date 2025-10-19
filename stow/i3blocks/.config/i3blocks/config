@@ -57,6 +57,11 @@ COLOR_LOW=#d79921
 COLOR_MEDIUM=#98971a
 COLOR_GOOD=#689d68
 
+# Caffeine
+# Left click: toggle
+[caffeine]
+interval=60
+
 # Time and date
 # Left click: cycle through timezones
 # Right click: launch calendar app (set via CALENDAR_APP env var)
@@ -112,3 +117,5 @@ TZ_LABELS=,UTC
 #markup=pango
 #interval=once
 #signal=11
+
+

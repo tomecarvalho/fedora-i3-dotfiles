@@ -24,6 +24,7 @@ seahorse
 stow
 tmux
 xclip
+xdotool
 xinput
 xrandr
 zoxide

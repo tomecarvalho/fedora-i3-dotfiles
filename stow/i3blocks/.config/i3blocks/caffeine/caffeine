@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# i3blocks block: Caffeine (keep presence)
+# Left click toggles a tiny daemon that jiggles the mouse to prevent idle.
+
+set -euo pipefail
+
+ICON_ON=${ICON_ON:-"󰅶"}
+ICON_OFF=${ICON_OFF:-"󰾪"}
+COLOR_ON=${COLOR_ON:-"#b8bb26"}
+COLOR_OFF=${COLOR_OFF:-"#7a7566"}
+
+# Use a thinner right-side padding by default (U+2009 THIN SPACE)
+PADDING=${PADDING:-" "}
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DAEMON="$SCRIPT_DIR/caffeine-daemon.sh"
+
+is_running() {
+  pgrep -f "$DAEMON" >/dev/null 2>&1
+}
+
+toggle() {
+  if is_running; then
+    pkill -f "$DAEMON" || true
+  else
+    nohup "$DAEMON" >/dev/null 2>&1 &
+  fi
+}
+
+# Handle click
+case "${BLOCK_BUTTON:-}" in
+  1)
+    toggle
+    ;;
+esac
+
+if is_running; then
+  ICON="$ICON_ON"
+  COLOR="$COLOR_ON"
+else
+  ICON="$ICON_OFF"
+  COLOR="$COLOR_OFF"
+fi
+
+# i3blocks expects up to 3 lines: full_text, short_text, color
+echo "${ICON}${PADDING}"
+echo "${ICON}${PADDING}"
+echo "$COLOR"
