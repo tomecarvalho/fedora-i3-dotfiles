@@ -38,6 +38,14 @@ interval=1
 signal=1
 LONG_FORMAT="${SYMB} ${VOL}% [${NAME}]"
 
+# Brightness (brightnessctl)
+# Scroll to change by SCROLL_STEP, left click sets LEFT_SET, right click RIGHT_SET
+# Set DEVICE to target a specific backlight device (e.g., nvidia_wmi_ec_backlight)
+# Icons can be customized via BRIGHTNESS_ICONS (comma-separated 7 icons)
+[brightnessctl]
+interval=60
+signal=3
+
 # Battery indicator (customised script)
 # Colour scheme: gruvbox-dark
 # Related udev rule to trigger update on status change: /etc/udev/rules.d/99-battery-status.rules
@@ -59,6 +67,7 @@ TZONES=$DEFAULT_TZ,UTC
 TZ_LABELS=,UTC
 # TODO: Choose a calendar app
 # CALENDAR_APP=
+
 
 # Generic media player support
 #
