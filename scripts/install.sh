@@ -165,8 +165,9 @@ step11() {
 }
 
 step12() {
-  echo "12. Set dark mode in gsettings"
+  echo "12. Set dark mode and theme in gsettings"
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+  gsettings set org.gnome.desktop.interface gtk-theme 'Mint-Y-Dark-Gruvbox'
 }
 
 usage() {
