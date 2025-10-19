@@ -67,13 +67,17 @@ $xansi autorandr --change --default default
 # redshift: Always-on night light
 $xnsi redshift -c ~/.config/redshift/redshift.conf -m randr
 
-# Pipewire-pulse
+# Audio output
 bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
 bindsym XF86AudioMute --release exec pkill -RTMIN+1 i3blocks
 bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
 bindsym XF86AudioLowerVolume --release exec pkill -RTMIN+1 i3blocks
 bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
 bindsym XF86AudioRaiseVolume --release exec pkill -RTMIN+1 i3blocks
+
+# Audio input
+bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bindsym XF86AudioMicMute --release exec pkill -RTMIN+4 i3blocks
 
 # Media player controls
 bindsym XF86AudioPlay exec playerctl play-pause

@@ -25,6 +25,7 @@ stow
 tmux
 xclip
 xdotool
+xev
 xinput
 xrandr
 zoxide

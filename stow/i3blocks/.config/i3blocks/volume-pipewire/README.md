@@ -76,3 +76,8 @@ signal=1
 ## SUBSCRIBE=1 requires interval=persist and always uses LONG_FORMAT
 #SUBSCRIBE=0
 ```
+
+# Modifications
+
+- Always shows the symbol for the current volume threshold, even when muted (no special muted icon)
+- When muted, scrolling to adjust volume will unmute

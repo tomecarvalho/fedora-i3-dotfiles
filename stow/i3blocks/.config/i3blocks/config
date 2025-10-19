@@ -38,6 +38,11 @@ interval=1
 signal=1
 LONG_FORMAT="${SYMB} ${VOL}% [${NAME}]"
 
+# Microphone volume control
+[volume-input-pipewire]
+interval=1
+signal=4
+
 # Brightness (brightnessctl)
 # Scroll to change by SCROLL_STEP, left click sets LEFT_SET, right click RIGHT_SET
 # Set DEVICE to target a specific backlight device (e.g., nvidia_wmi_ec_backlight)

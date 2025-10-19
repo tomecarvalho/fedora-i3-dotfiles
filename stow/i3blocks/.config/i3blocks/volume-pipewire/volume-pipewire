@@ -106,12 +106,24 @@ function set_default_playback_device_next {
     move_sinks_to_new_default $default_sink
 }
 
+get_mute_status() {
+    pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}'
+}
+
 case "$BLOCK_BUTTON" in
     1) set_default_playback_device_next ;;
     2) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY toggle ;;
     3) set_default_playback_device_next -1 ;;
-    4) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%+ ;;
-    5) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
+    4)
+        if [ "$(get_mute_status)" = "yes" ]; then
+            pactl set-sink-mute @DEFAULT_SINK@ 0
+        fi
+        amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%+ ;;
+    5)
+        if [ "$(get_mute_status)" = "yes" ]; then
+            pactl set-sink-mute @DEFAULT_SINK@ 0
+        fi
+        amixer -q -D $MIXER sset $SCONTROL $CAPABILITY $AUDIO_DELTA%- ;;
 esac
 
 function print_format {
@@ -144,13 +156,13 @@ sed 's/.*= "\(.*\)".*/\1/')
         NAME=${DESCRIPTION:-$NAME}
     fi
 
+    # Always show the symbol for the current volume threshold, even when muted
+    SYMB=$AUDIO_HIGH_SYMBOL
+    [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMB=$AUDIO_MED_SYMBOL
+    [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
     if [[ $MUTED =~ "no" ]] ; then
-        SYMB=$AUDIO_HIGH_SYMBOL
-        [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMB=$AUDIO_MED_SYMBOL
-        [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
         COLOR=$DEFAULT_COLOR
     else
-        SYMB=$AUDIO_MUTED_SYMBOL
         COLOR=$MUTED_COLOR
     fi
 
