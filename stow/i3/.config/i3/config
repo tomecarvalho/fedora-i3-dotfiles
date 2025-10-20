@@ -198,6 +198,19 @@ bar {
   position top
   status_command i3blocks
   tray_output primary
+  font pango:sans-serif 9
+  colors {
+    background #282828
+    statusline #fbf1c7
+    separator #665c54
+    
+    #                  border    bg        text
+    focused_workspace  #83a598   #458588   #fbf1c7
+    active_workspace   #504945   #504945   #fbf1c7
+    inactive_workspace #504945   #282828   #d5c4a1
+    urgent_workspace   #cc241d   #cc241d   #fbf1c7
+    binding_mode       #cc241d   #cc241d   #fbf1c7
+  }
 }
 
 # Give every window a 1px border and title bar

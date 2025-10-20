@@ -10,6 +10,7 @@ fuse
 fzf
 git
 gnome-keyring
+gpick
 i3blocks
 lxappearance
 perl-Env
