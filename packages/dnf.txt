@@ -12,7 +12,9 @@ git
 gnome-keyring
 i3blocks
 lxappearance
+perl-Env
 picom
+playerctl
 python3
 qt5ct
 neovim

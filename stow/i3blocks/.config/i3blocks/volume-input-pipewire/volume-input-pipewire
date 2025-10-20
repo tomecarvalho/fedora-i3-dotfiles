@@ -40,6 +40,11 @@ case "${BLOCK_BUTTON:-}" in
     5) decrease ;;
 esac
 
+# Trigger immediate refresh after button click (signal=4)
+if [ -n "${BLOCK_BUTTON:-}" ]; then
+    (pkill -RTMIN+4 i3blocks) &
+fi
+
 if [ "$muted" = "yes" ]; then
     ICON="$ICON_OFF"
     COLOR="$COLOR_OFF"

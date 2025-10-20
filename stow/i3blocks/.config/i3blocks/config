@@ -29,6 +29,14 @@ command=~/.config/i3blocks/$BLOCK_NAME/$BLOCK_NAME
 separator_block_width=15
 markup=none
 
+# Media player status
+# Left click: previous track
+# Middle click: play/pause
+# Right click: next track
+[mediaplayer]
+interval=5
+signal=5
+
 # Pipewire volume control
 # Displays volume and output device
 # Left click: toggle output device
@@ -39,14 +47,17 @@ signal=1
 LONG_FORMAT="${SYMB} ${VOL}% [${NAME}]"
 
 # Microphone volume control
+# Left click: set low volume preset
+# Middle click: toggle mute
+# Right click: set high volume preset
 [volume-input-pipewire]
-interval=1
+interval=5
 signal=4
 
 # Brightness (brightnessctl)
-# Scroll to change by SCROLL_STEP, left click sets LEFT_SET, right click RIGHT_SET
-# Set DEVICE to target a specific backlight device (e.g., nvidia_wmi_ec_backlight)
-# Icons can be customized via BRIGHTNESS_ICONS (comma-separated 7 icons)
+# Left click: set low brightness preset
+# Right click: set high brightness preset
+# Scroll: change brightness
 [brightnessctl]
 interval=60
 signal=3

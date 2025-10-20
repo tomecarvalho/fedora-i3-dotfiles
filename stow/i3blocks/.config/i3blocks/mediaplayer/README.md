@@ -34,3 +34,7 @@ instance=spotify
 interval=5
 signal=10
 ```
+
+# Modifications
+- Added pause/play icon to represent status
+- Added refresh command after button clicks
