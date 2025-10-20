@@ -2,8 +2,7 @@
 
 ICON_ON=${ICON_ON:-""}
 ICON_OFF=${ICON_OFF:-""}
-COLOR_ON=${COLOR_ON:-"#ffffff"}
-COLOR_OFF=${COLOR_OFF:-"#888888"}
+COLOR_OFF=${COLOR_OFF:-"#7c6f64"}
 
 toggle() { pactl set-source-mute @DEFAULT_SOURCE@ toggle; }
 set_low() {
@@ -51,11 +50,11 @@ if [ "$muted" = "yes" ]; then
     TEXT="$ICON $percent%"
 else
     ICON="$ICON_ON"
-    COLOR="$COLOR_ON"
+    COLOR=""
     TEXT="$ICON $percent%"
 fi
 
 # i3blocks expects up to 3 lines: full_text, short_text, color
 echo "$TEXT"
 echo "$ICON"
-echo "$COLOR"
+[ -n "$COLOR" ] && echo "$COLOR"

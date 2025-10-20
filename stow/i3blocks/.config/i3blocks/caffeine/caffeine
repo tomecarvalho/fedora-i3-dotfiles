@@ -8,7 +8,7 @@ set -euo pipefail
 ICON_ON=${ICON_ON:-"󰅶"}
 ICON_OFF=${ICON_OFF:-"󰾪"}
 COLOR_ON=${COLOR_ON:-"#b8bb26"}
-COLOR_OFF=${COLOR_OFF:-"#7a7566"}
+COLOR_OFF=${COLOR_OFF:-"#7c6f64"}
 
 # Use a thinner right-side padding by default (U+2009 THIN SPACE)
 PADDING=${PADDING:-" "}

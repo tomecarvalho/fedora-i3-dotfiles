@@ -15,8 +15,8 @@ AUDIO_MUTED_SYMBOL=${AUDIO_MUTED_SYMBOL:-'  '}
 
 AUDIO_DELTA=${AUDIO_DELTA:-5}
 
-DEFAULT_COLOR=${DEFAULT_COLOR:-"#ffffff"}
-MUTED_COLOR=${MUTED_COLOR:-"#a0a0a0"}
+# TODO
+MUTED_COLOR=${MUTED_COLOR:-"#7c6f64"}
 
 LONG_FORMAT=${LONG_FORMAT:-'${SYMB} ${VOL}% [${INDEX}:${NAME}]'}
 SHORT_FORMAT=${SHORT_FORMAT:-'${SYMB} ${VOL}% [${INDEX}]'}
@@ -41,14 +41,13 @@ while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
         X) AUDIO_MUTED_SYMBOL="$OPTARG" ;;
         T) AUDIO_MED_THRESH="$OPTARG" ;;
         t) AUDIO_LOW_THRESH="$OPTARG" ;;
-        C) DEFAULT_COLOR="$OPTARG" ;;
         c) MUTED_COLOR="$OPTARG" ;;
         i) AUDIO_INTERVAL="$OPTARG" ;;
         m) MIXER="$OPTARG" ;;
         s) SCONTROL="$OPTARG" ;;
         h) printf \
 "Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
-        [-L symb] [-X symb] [-T thresh] [-t thresh] [-C color] [-c color] [-i inter] 
+        [-L symb] [-X symb] [-T thresh] [-t thresh] [-c color] [-i inter] 
         [-m mixer] [-s scontrol] [-h]
 Options:
 -F, -f\tOutput format (-F long format, -f short format) to use, with exposed variables:
@@ -62,7 +61,6 @@ Options:
 -X\tSymbol to use when audio is muted. Default: '$AUDIO_MUTED_SYMBOL'
 -T\tThreshold for medium audio level. Default: $AUDIO_MED_THRESH
 -t\tThreshold for low audio level. Default: $AUDIO_LOW_THRESH
--C\tColor for non-muted audio. Default: $DEFAULT_COLOR
 -c\tColor for muted audio. Default: $MUTED_COLOR
 -i\tInterval size of volume increase/decrease. Default: $AUDIO_DELTA
 -m\tUse the given mixer.
@@ -161,7 +159,7 @@ sed 's/.*= "\(.*\)".*/\1/')
     [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMB=$AUDIO_MED_SYMBOL
     [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
     if [[ $MUTED =~ "no" ]] ; then
-        COLOR=$DEFAULT_COLOR
+        COLOR=""
     else
         COLOR=$MUTED_COLOR
     fi
@@ -176,7 +174,7 @@ sed 's/.*= "\(.*\)".*/\1/')
     else
         print_format "$LONG_FORMAT"
         print_format "$SHORT_FORMAT"
-        echo "$COLOR"
+        [[ -n "$COLOR" ]] && echo "$COLOR"
     fi
 }
 
