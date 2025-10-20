@@ -83,7 +83,7 @@ interval=60
 # Right click: launch calendar app (set via CALENDAR_APP env var)
 [time]
 interval=5
-STRFTIME_FORMAT=%H:%M %d/%m/%Y
+STRFTIME_FORMAT=%a %d/%m/%Y  %R
 TZONES=$DEFAULT_TZ,UTC
 TZ_LABELS=,UTC
 # TODO: Choose a calendar app
