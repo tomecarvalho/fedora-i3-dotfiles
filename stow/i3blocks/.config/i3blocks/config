@@ -41,6 +41,7 @@ signal=5
 # Displays volume and output device
 # Left click: toggle output device
 # Middle click: toggle mute
+# TODO: Make right click open volume mixer
 [volume-pipewire]
 interval=1
 signal=1
