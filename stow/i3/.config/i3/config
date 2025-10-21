@@ -174,7 +174,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # Resize mode
-mode "resize" {
+mode "Resize" {
   bindsym $left resize shrink width 10 px or 10 ppt
   bindsym $down resize grow height 10 px or 10 ppt
   bindsym $up resize shrink height 10 px or 10 ppt
@@ -184,7 +184,7 @@ mode "resize" {
   bindsym Escape mode "default"
   bindsym $mod+s mode "default"
 }
-bindsym $mod+s mode "resize"
+bindsym $mod+s mode "Resize"
 
 # App shortcuts
 bindsym $mod+q exec $browser
@@ -209,7 +209,7 @@ bar {
     active_workspace   #504945   #504945   #fbf1c7
     inactive_workspace #504945   #282828   #d5c4a1
     urgent_workspace   #cc241d   #cc241d   #fbf1c7
-    binding_mode       #cc241d   #cc241d   #fbf1c7
+    binding_mode       #b16286   #b16286   #fbf1c7
   }
 }
 
