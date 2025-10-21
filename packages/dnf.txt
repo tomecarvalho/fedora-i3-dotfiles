@@ -17,6 +17,7 @@ perl-Env
 picom
 playerctl
 python3
+qalculate-gtk
 qt5ct
 neovim
 ranger
