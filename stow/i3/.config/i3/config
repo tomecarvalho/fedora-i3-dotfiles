@@ -67,16 +67,29 @@ $xansi autorandr --change --default default
 # redshift: Always-on night light
 $xnsi redshift -c ~/.config/redshift/redshift.conf -m randr
 
-# Use pactl to adjust volume in PulseAudio.
-set $refresh_i3status killall -SIGUSR1 i3status
-bindsym XF86AudioRaiseVolume $xnsi pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
-bindsym XF86AudioLowerVolume $xnsi pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
-bindsym XF86AudioMute $xnsi pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-bindsym XF86AudioMicMute $xnsi pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+# Audio output
+bindsym XF86AudioMute exec pactl set-sink-mute 0 toggle
+bindsym XF86AudioMute --release exec pkill -RTMIN+1 i3blocks
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume 0 -5%
+bindsym XF86AudioLowerVolume --release exec pkill -RTMIN+1 i3blocks
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume 0 +5%
+bindsym XF86AudioRaiseVolume --release exec pkill -RTMIN+1 i3blocks
+
+# Audio input
+bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+bindsym XF86AudioMicMute --release exec pkill -RTMIN+4 i3blocks
+
+# Media player controls
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 
 # Use brightnessctl to adjust brightness
 bindsym XF86MonBrightnessUp exec brightnessctl set +10%
+bindsym XF86MonBrightnessUp --release exec pkill -RTMIN+3 i3blocks
 bindsym XF86MonBrightnessDown exec brightnessctl set 10%-
+bindsym XF86MonBrightnessDown --release exec pkill -RTMIN+3 i3blocks
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -161,7 +174,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # Resize mode
-mode "resize" {
+mode "Resize" {
   bindsym $left resize shrink width 10 px or 10 ppt
   bindsym $down resize grow height 10 px or 10 ppt
   bindsym $up resize shrink height 10 px or 10 ppt
@@ -171,7 +184,7 @@ mode "resize" {
   bindsym Escape mode "default"
   bindsym $mod+s mode "default"
 }
-bindsym $mod+s mode "resize"
+bindsym $mod+s mode "Resize"
 
 # App shortcuts
 bindsym $mod+q exec $browser
@@ -183,9 +196,26 @@ include ~/.config/i3/themes/gruvbox-dark
 
 bar {
   position top
-  status_command i3status
+  status_command i3blocks
   tray_output primary
+  font pango:sans-serif 9
+  colors {
+    background #282828
+    statusline #fbf1c7
+    separator #665c54
+    
+    #                  border    bg        text
+    focused_workspace  #83a598   #458588   #fbf1c7
+    active_workspace   #504945   #504945   #fbf1c7
+    inactive_workspace #504945   #282828   #d5c4a1
+    urgent_workspace   #cc241d   #cc241d   #fbf1c7
+    binding_mode       #b16286   #b16286   #fbf1c7
+  }
 }
 
 # Give every window a 1px border and title bar
 for_window [class=.*] border normal 1
+
+# Floating windows
+for_window [class="pavucontrol"] floating enable
+for_window [class="Gpick"] floating enable, resize set 800 400

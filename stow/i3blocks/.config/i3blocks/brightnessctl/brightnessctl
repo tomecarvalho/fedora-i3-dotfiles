@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+
+# i3blocks brightness block using brightnessctl
+# - Displays Nerd Font icon + percentage
+# - Scroll up/down to change by SCROLL_STEP (default 5%)
+# - Left click sets to LEFT_SET (default 70%), Right click sets to RIGHT_SET (default 100%)
+# - Custom icons via BRIGHTNESS_ICONS (comma-separated 7 icons) or BRIGHTNESS_ICON_1..7
+# - Optional DEVICE env to target a specific brightnessctl device (e.g., nvidia_wmi_ec_backlight)
+
+set -euo pipefail
+
+# Defaults
+SCROLL_STEP=${SCROLL_STEP:-5}
+LEFT_SET=${LEFT_SET:-70}
+RIGHT_SET=${RIGHT_SET:-100}
+DEVICE=${DEVICE:-}
+
+# Default icons (7 levels)
+DEFAULT_ICONS=(
+	"󰃚"
+	"󰃛"
+	"󰃜"
+	"󰃝"
+	"󰃞"
+	"󰃟"
+	"󰃠"
+)
+
+# Build icons array from env if provided
+ICONS=()
+if [[ -n "${BRIGHTNESS_ICONS:-}" ]]; then
+	IFS=',' read -r -a ICONS <<<"${BRIGHTNESS_ICONS}"
+fi
+
+# If individual icons are provided, apply them
+for i in {1..7}; do
+	var="BRIGHTNESS_ICON_${i}"
+	if [[ -n "${!var:-}" ]]; then
+		# Ensure ICONS has enough length
+		while (( ${#ICONS[@]} < i )); do ICONS+=(""); done
+		ICONS[$((i-1))]="${!var}"
+	fi
+done
+
+# Fill missing icons from defaults
+for i in {0..6}; do
+	if [[ -z "${ICONS[$i]:-}" ]]; then
+		ICONS[$i]="${DEFAULT_ICONS[$i]}"
+	fi
+done
+
+bcctl() {
+	if [[ -n "$DEVICE" ]]; then
+		brightnessctl -d "$DEVICE" "$@"
+	else
+		brightnessctl "$@"
+	fi
+}
+
+safe_set() {
+	# Use -q to quiet output and avoid interfering with i3blocks
+	bcctl -q set "$1" || true
+}
+
+get_percent() {
+	# Use raw values to compute percentage reliably across versions
+	local curr max pct
+	curr=$(bcctl g 2>/dev/null || echo "")
+	max=$(bcctl m 2>/dev/null || echo "")
+	if [[ -z "$curr" || -z "$max" || "$max" = 0 ]]; then
+		echo ""
+		return 1
+	fi
+	pct=$(( curr * 100 / max ))
+	echo "$pct"
+}
+
+handle_click() {
+	case "${BLOCK_BUTTON:-0}" in
+		1)
+			safe_set "${LEFT_SET}%"
+			;;
+		3)
+			safe_set "${RIGHT_SET}%"
+			;;
+		4)
+			safe_set "+${SCROLL_STEP}%"
+			;;
+		5)
+			safe_set "${SCROLL_STEP}%-"
+			;;
+	esac
+}
+
+render() {
+	local pct icon_idx icon
+	pct=$(get_percent)
+	if [[ -z "$pct" ]]; then
+		echo " N/A"
+		echo
+		echo "#FF0000"
+		return 0
+	fi
+
+	# Bucketize into 7 levels: 0-14, 15-29, ..., 90-100
+	icon_idx=$(( pct / 15 + 1 ))
+	if (( icon_idx < 1 )); then icon_idx=1; fi
+	if (( icon_idx > 7 )); then icon_idx=7; fi
+	icon="${ICONS[$((icon_idx-1))]}"
+
+		echo "${icon}  ${pct}%"
+}
+
+# If brightnessctl is missing, show N/A gracefully
+if ! command -v brightnessctl >/dev/null 2>&1; then
+	echo " N/A"
+	exit 0
+fi
+
+# Handle click/scroll, then render current state
+handle_click
+render
+

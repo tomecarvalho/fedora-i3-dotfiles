@@ -1,6 +1,8 @@
+acpi
 alacritty
 arandr
 autorandr
+brightnessctl
 curl
 dunst
 flatpak
@@ -8,10 +10,14 @@ fuse
 fzf
 git
 gnome-keyring
+gpick
+i3blocks
 lxappearance
+perl-Env
 picom
-polybar
+playerctl
 python3
+qalculate-gtk
 qt5ct
 neovim
 ranger
@@ -20,8 +26,11 @@ redshift-gtk
 rofi
 seahorse
 stow
+thunderbird
 tmux
 xclip
+xdotool
+xev
 xinput
 xrandr
 zoxide

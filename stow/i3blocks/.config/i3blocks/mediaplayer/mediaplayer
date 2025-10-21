@@ -1,0 +1,208 @@
+#!/usr/bin/env perl
+# Copyright (C) 2014 Tony Crisci <tony@dubstepdish.com>
+# Copyright (C) 2015 Thiago Perrotta <perrotta dot thiago at poli dot ufrj dot br>
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# For all media players except mpd/cmus/rhythmbox, MPRIS support should be
+# enabled and the playerctl binary should be in your path.
+# See https://github.com/acrisci/playerctl
+
+# Set instance=NAME in the i3blocks configuration to specify a music player
+# (playerctl will attempt to connect to org.mpris.MediaPlayer2.[NAME] on your
+# DBus session). If instance is empty, playerctl will connect to the first
+# supported media player it finds.
+
+use utf8;               # allow literal UTF-8 icons in source
+use Time::HiRes qw(usleep);
+use Env qw(BLOCK_INSTANCE);
+
+# ensure UTF-8 output for i3blocks bar
+binmode(STDOUT, ':encoding(UTF-8)');
+
+use constant DELAY => 50; # Delay in ms to let network-based players (spotify) reflect new data.
+use constant SPOTIFY_STR => 'spotify';
+
+my $ICON_PLAY  = ""; # play icon
+my $ICON_PAUSE = ""; # pause icon
+
+my @metadata = ();
+my $player_arg = "";
+
+if ($BLOCK_INSTANCE) {
+    $player_arg = "--player='$BLOCK_INSTANCE'";
+}
+
+sub buttons {
+    my $method = shift;
+
+    if($method eq 'mpd') {
+        if ($ENV{'BLOCK_BUTTON'} == 1) {
+            system("mpc prev &>/dev/null");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
+            system("mpc toggle &>/dev/null");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
+            system("mpc next &>/dev/null");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
+            system("mpc volume +10 &>/dev/null");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
+            system("mpc volume -10 &>/dev/null");
+        }
+    } elsif ($method eq 'cmus') {
+        if ($ENV{'BLOCK_BUTTON'} == 1) {
+            system("cmus-remote --prev");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
+            system("cmus-remote --pause");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
+            system("cmus-remote --next");
+        }
+    } elsif ($method eq 'playerctl') {
+        if ($ENV{'BLOCK_BUTTON'} == 1) {
+            system("playerctl $player_arg previous");
+            usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
+        } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
+            system("playerctl $player_arg play-pause");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
+            system("playerctl $player_arg next");
+            usleep(DELAY * 1000) if $BLOCK_INSTANCE eq SPOTIFY_STR;
+        } elsif ($ENV{'BLOCK_BUTTON'} == 4) {
+            system("playerctl $player_arg volume 0.01+");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 5) {
+            system("playerctl $player_arg volume 0.01-");
+        }
+    } elsif ($method eq 'rhythmbox') {
+        if ($ENV{'BLOCK_BUTTON'} == 1) {
+            system("rhythmbox-client --previous");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 2) {
+            system("rhythmbox-client --play-pause");
+        } elsif ($ENV{'BLOCK_BUTTON'} == 3) {
+            system("rhythmbox-client --next");
+        }
+    }
+    # Trigger immediate refresh of i3blocks mediaplayer block (signal=5)
+    # Sleep briefly to let the player respond to the command first
+    if ($ENV{'BLOCK_BUTTON'}) {
+        usleep(200 * 1000);  # 200ms delay
+        system("pkill -RTMIN+5 i3blocks");
+    }
+}
+
+sub cmus {
+    my @cmus = split /^/, qx(cmus-remote -Q);
+    if ($? == 0) {
+        my $status = '';
+        foreach my $line (@cmus) {
+            my @data = split /\s/, $line;
+            if (shift @data eq 'tag') {
+                my $key = shift @data;
+                my $value = join ' ', @data;
+
+                @metadata[0] = $value if $key eq 'artist';
+                @metadata[1] = $value if $key eq 'title';
+            } elsif ($data[0] && $data[0] eq 'status') {
+                # e.g., "status playing" or "status paused"
+                $status = $data[1] // '';
+            }
+        }
+
+        if (@metadata) {
+            buttons('cmus');
+
+            # metadata found so we are done
+            my $icon = $status eq 'playing' ? $ICON_PLAY
+                     : $status eq 'paused'  ? $ICON_PAUSE
+                     : '';
+            print(($icon ? "$icon  " : '') . (join ' - ', @metadata));
+            print("\n");
+            exit 0;
+        }
+    }
+}
+
+sub mpd {
+    my $data = qx(mpc current);
+    if (not $data eq '') {
+        buttons("mpd");
+        # Determine status from mpc status (second line contains [playing]/[paused])
+        my @status_lines = split /^/, qx(mpc status);
+        my $status_line = $status_lines[1] // '';
+        my $icon = '';
+        if ($status_line =~ /\[playing\]/i) {
+            $icon = $ICON_PLAY;
+        } elsif ($status_line =~ /\[paused\]/i) {
+            $icon = $ICON_PAUSE;
+        }
+    print(($icon ? "$icon  " : '') . $data);
+        exit 0;
+    }
+}
+
+sub playerctl {
+    buttons('playerctl');
+
+    # Query status for icon
+    my $status = qx(playerctl $player_arg status 2>/dev/null);
+    chomp $status;
+
+    my $artist = qx(playerctl $player_arg metadata artist 2>/dev/null);
+    chomp $artist;
+    # exit status will be nonzero when playerctl cannot find your player
+    exit(0) if $? || $artist eq '(null)';
+
+    push(@metadata, $artist) if $artist;
+
+    my $title = qx(playerctl $player_arg metadata title);
+    exit(0) if $? || $title eq '(null)';
+
+    push(@metadata, $title) if $title;
+    if (@metadata) {
+        my $icon = $status eq 'Playing' ? $ICON_PLAY
+                 : $status eq 'Paused'  ? $ICON_PAUSE
+                 : '';
+    print(($icon ? "$icon  " : '') . join(" - ", @metadata));
+    }
+}
+
+sub rhythmbox {
+    buttons('rhythmbox');
+
+    my $data = qx(rhythmbox-client --print-playing --no-start);
+    chomp $data;
+
+    # Try to determine status via MPRIS if available
+    my $icon = '';
+    my $rb_status = qx(playerctl --player='rhythmbox' status 2>/dev/null);
+    chomp $rb_status;
+    if ($? == 0) {
+        $icon = $rb_status eq 'Playing' ? $ICON_PLAY
+             : $rb_status eq 'Paused'  ? $ICON_PAUSE
+             : '';
+    }
+
+    print(($icon ? "$icon  " : '') . $data . "\n");
+}
+
+if ($player_arg =~ /mpd/) {
+    mpd;
+}
+elsif ($player_arg =~ /cmus/) {
+    cmus;
+}
+elsif ($player_arg =~ /rhythmbox/) {
+    rhythmbox;
+}
+else {
+    playerctl;
+}
+print("\n");

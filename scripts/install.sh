@@ -16,6 +16,8 @@ step1() {
 
   STOW_DIR="$SCRIPT_DIR/../stow"
 
+  chmod +x "$SCRIPT_DIR/secure-boot-key.sh"
+  chmod +x "$SCRIPT_DIR/nvidia-drivers.sh"
   chmod +x "$STOW_DIR/i3/.config/i3/scripts/gnome-keyring.sh"
   chmod +x "$STOW_DIR/rofi/.config/rofi/scripts/rofi-power-menu.sh"
 
@@ -48,7 +50,7 @@ step4() {
   sudo dnf install -y "${packages[@]}"
 
   echo "4. Removing unnecessary packages"
-  sudo dnf rm -y xfce4-terminal
+  sudo dnf rm -y xfce4-terminal volumeicon
 
   echo "4. Replacing ffmpeg-free with ffmpeg"
   sudo dnf install -y ffmpeg --allowerasing
@@ -163,8 +165,9 @@ step11() {
 }
 
 step12() {
-  echo "12. Set dark mode in gsettings"
+  echo "12. Set dark mode and theme in gsettings"
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+  gsettings set org.gnome.desktop.interface gtk-theme 'Mint-Y-Dark-Gruvbox'
 }
 
 usage() {

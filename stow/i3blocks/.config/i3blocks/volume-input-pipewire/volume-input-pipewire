@@ -1,0 +1,60 @@
+#!/bin/sh
+
+ICON_ON=${ICON_ON:-""}
+ICON_OFF=${ICON_OFF:-""}
+COLOR_OFF=${COLOR_OFF:-$COLOR_DISABLED}
+
+toggle() { pactl set-source-mute @DEFAULT_SOURCE@ toggle; }
+set_low() {
+    pactl set-source-mute @DEFAULT_SOURCE@ 0
+    pactl set-source-volume @DEFAULT_SOURCE@ "${LOW_PRESET:-50}%"
+}
+set_high() {
+    pactl set-source-mute @DEFAULT_SOURCE@ 0
+    pactl set-source-volume @DEFAULT_SOURCE@ "${HIGH_PRESET:-100}%"
+}
+increase() {
+    muted=$(pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print $2}')
+    volume=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk -F'/' 'NR==1 {gsub(/ /,"",$2); print $2}')
+    percent=$(echo "$volume" | grep -o '[0-9]\{1,3\}' | head -1)
+    if [ "$muted" = "yes" ]; then
+        toggle
+    fi
+    if [ "$percent" -lt 150 ]; then
+        pactl set-source-volume @DEFAULT_SOURCE@ +5%
+    fi
+}
+decrease() { pactl set-source-volume @DEFAULT_SOURCE@ -5%; }
+
+muted=$(pactl get-source-mute @DEFAULT_SOURCE@ | awk '{print $2}')
+volume=$(pactl get-source-volume @DEFAULT_SOURCE@ | awk -F'/' 'NR==1 {gsub(/ /,"",$2); print $2}')
+percent=$(echo "$volume" | grep -o '[0-9]\{1,3\}' | head -1)
+
+
+case "${BLOCK_BUTTON:-}" in
+    1) set_low ;;
+    2) toggle ;;
+    3) set_high ;;
+    4) increase ;;
+    5) decrease ;;
+esac
+
+# Trigger immediate refresh after button click (signal=4)
+if [ -n "${BLOCK_BUTTON:-}" ]; then
+    (pkill -RTMIN+4 i3blocks) &
+fi
+
+if [ "$muted" = "yes" ]; then
+    ICON="$ICON_OFF"
+    COLOR="$COLOR_OFF"
+    TEXT="$ICON $percent%"
+else
+    ICON="$ICON_ON"
+    COLOR=""
+    TEXT="$ICON $percent%"
+fi
+
+# i3blocks expects up to 3 lines: full_text, short_text, color
+echo "$TEXT"
+echo "$ICON"
+[ -n "$COLOR" ] && echo "$COLOR"
