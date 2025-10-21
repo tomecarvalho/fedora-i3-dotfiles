@@ -1,0 +1,1 @@
+The `dunstrc` config file does not support importing themes. Therefore, the desired theme's file must be copied from `dunst/themes/` to `dunst/dunstrc`.
