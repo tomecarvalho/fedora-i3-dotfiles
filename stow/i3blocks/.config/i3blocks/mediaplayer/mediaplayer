@@ -36,6 +36,12 @@ use constant SPOTIFY_STR => 'spotify';
 
 my $ICON_PLAY  = ""; # play icon
 my $ICON_PAUSE = ""; # pause icon
+my $ICON_COLOR = $ENV{COLOR_ICON_INTERACTABLE} || '#83a598';
+
+sub colorize_icon {
+    my ($icon) = @_;
+    return $icon ? "<span foreground='" . $ICON_COLOR . "'>" . $icon . "</span>" : '';
+}
 
 my @metadata = ();
 my $player_arg = "";
@@ -123,7 +129,8 @@ sub cmus {
             my $icon = $status eq 'playing' ? $ICON_PLAY
                      : $status eq 'paused'  ? $ICON_PAUSE
                      : '';
-            print(($icon ? "$icon  " : '') . (join ' - ', @metadata));
+            my $icon_markup = colorize_icon($icon);
+            print(($icon_markup ? "$icon_markup  " : '') . (join ' - ', @metadata));
             print("\n");
             exit 0;
         }
@@ -143,7 +150,8 @@ sub mpd {
         } elsif ($status_line =~ /\[paused\]/i) {
             $icon = $ICON_PAUSE;
         }
-    print(($icon ? "$icon  " : '') . $data);
+    my $icon_markup = colorize_icon($icon);
+    print(($icon_markup ? "$icon_markup  " : '') . $data);
         exit 0;
     }
 }
@@ -170,7 +178,8 @@ sub playerctl {
         my $icon = $status eq 'Playing' ? $ICON_PLAY
                  : $status eq 'Paused'  ? $ICON_PAUSE
                  : '';
-    print(($icon ? "$icon  " : '') . join(" - ", @metadata));
+    my $icon_markup = colorize_icon($icon);
+    print(($icon_markup ? "$icon_markup  " : '') . join(" - ", @metadata));
     }
 }
 
@@ -190,7 +199,8 @@ sub rhythmbox {
              : '';
     }
 
-    print(($icon ? "$icon  " : '') . $data . "\n");
+    my $icon_markup = colorize_icon($icon);
+    print(($icon_markup ? "$icon_markup  " : '') . $data . "\n");
 }
 
 if ($player_arg =~ /mpd/) {

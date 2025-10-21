@@ -22,9 +22,11 @@
 # Change $SCRIPT_DIR to the location of your scripts!
 command=~/.config/i3blocks/$BLOCK_NAME/$BLOCK_NAME
 separator_block_width=15
-markup=none
+markup=pango
 COLOR_DISABLED=#7c6f64
 COLOR_ENABLED=#b8bb26
+COLOR_ICON_INTERACTABLE=#83a598
+COLOR_ICON_INFO=#fabd2f
 
 # Media player status
 # Left click: previous track

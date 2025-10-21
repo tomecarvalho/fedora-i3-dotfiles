@@ -29,6 +29,7 @@ my $short_text;
 my $bat_number = $ENV{BAT_NUMBER} || 0;
 my $label = $ENV{LABEL} || "";
 my $icon = '';
+my $icon_info_color = $ENV{COLOR_ICON_INFO} || "#fabd2f"; # color for informational icons
 
 # Color configuration via environment variables
 my $color_critical = $ENV{COLOR_CRITICAL} || "#FF0000";  # < 20%
@@ -100,8 +101,9 @@ if ($status eq 'Charging') {
 	}
 }
 
-# Compose display strings: icon followed by percentage
-$full_text = "$label$icon $percent%";
+# Compose display strings: icon (colored) followed by percentage
+my $icon_markup = "<span foreground='" . $icon_info_color . "'>" . $icon . "</span>";
+$full_text = "$label$icon_markup $percent%";
 $short_text = $full_text;
 
 # Only show remaining time if discharging
