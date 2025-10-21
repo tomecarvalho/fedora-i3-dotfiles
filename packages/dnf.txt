@@ -25,6 +25,7 @@ redshift-gtk
 rofi
 seahorse
 stow
+thunderbird
 tmux
 xclip
 xdotool
