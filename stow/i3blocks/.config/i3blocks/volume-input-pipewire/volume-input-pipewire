@@ -3,6 +3,7 @@
 ICON_ON=${ICON_ON:-""}
 ICON_OFF=${ICON_OFF:-""}
 COLOR_OFF=${COLOR_OFF:-$COLOR_DISABLED}
+ICON_INTERACTABLE_COLOR=${ICON_INTERACTABLE_COLOR:-$COLOR_ICON_INTERACTABLE}
 
 toggle() { pactl set-source-mute @DEFAULT_SOURCE@ toggle; }
 set_low() {
@@ -51,7 +52,9 @@ if [ "$muted" = "yes" ]; then
 else
     ICON="$ICON_ON"
     COLOR=""
-    TEXT="$ICON $percent%"
+    # Color only the icon to indicate interactivity
+    COLORED_ICON="<span foreground='${ICON_INTERACTABLE_COLOR:-#83a598}'>${ICON}</span>"
+    TEXT="$COLORED_ICON $percent%"
 fi
 
 # i3blocks expects up to 3 lines: full_text, short_text, color

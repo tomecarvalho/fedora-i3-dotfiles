@@ -96,7 +96,7 @@ render() {
 	local pct icon_idx icon
 	pct=$(get_percent)
 	if [[ -z "$pct" ]]; then
-		echo " N/A"
+		echo "<span foreground='${COLOR_ICON_INFO:-#fabd2f}'></span> N/A"
 		echo
 		echo "#FF0000"
 		return 0
@@ -108,7 +108,8 @@ render() {
 	if (( icon_idx > 7 )); then icon_idx=7; fi
 	icon="${ICONS[$((icon_idx-1))]}"
 
-		echo "${icon}  ${pct}%"
+    	# Color the icon to indicate interactivity
+    	echo "<span foreground='${COLOR_ICON_INTERACTABLE:-#83a598}'>${icon}</span>  ${pct}%"
 }
 
 # If brightnessctl is missing, show N/A gracefully

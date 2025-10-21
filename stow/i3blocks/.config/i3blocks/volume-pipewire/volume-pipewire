@@ -19,6 +19,7 @@ AUDIO_DELTA=${AUDIO_DELTA:-5}
 VOLUME_MIXER=${VOLUME_MIXER:-"pavucontrol"}
 
 MUTED_COLOR=${MUTED_COLOR:-$COLOR_DISABLED}
+ICON_INTERACTABLE_COLOR=${ICON_INTERACTABLE_COLOR:-$COLOR_ICON_INTERACTABLE}
 
 LONG_FORMAT=${LONG_FORMAT:-'${SYMB} ${VOL}% [${INDEX}:${NAME}]'}
 SHORT_FORMAT=${SHORT_FORMAT:-'${SYMB} ${VOL}% [${INDEX}]'}
@@ -164,6 +165,8 @@ sed 's/.*= "\(.*\)".*/\1/')
     [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
     if [[ $MUTED =~ "no" ]] ; then
         COLOR=""
+        # Color only the icon to indicate interactivity
+        SYMB="<span foreground='${ICON_INTERACTABLE_COLOR:-#83a598}'>${SYMB}</span>"
     else
         COLOR=$MUTED_COLOR
     fi
