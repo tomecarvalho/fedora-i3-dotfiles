@@ -50,7 +50,7 @@ step4() {
   sudo dnf install -y "${packages[@]}"
 
   echo "4. Removing unnecessary packages"
-  sudo dnf rm -y xfce4-terminal
+  sudo dnf rm -y xfce4-terminal volumeicon
 
   echo "4. Replacing ffmpeg-free with ffmpeg"
   sudo dnf install -y ffmpeg --allowerasing
