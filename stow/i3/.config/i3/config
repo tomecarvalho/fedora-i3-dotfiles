@@ -215,3 +215,7 @@ bar {
 
 # Give every window a 1px border and title bar
 for_window [class=.*] border normal 1
+
+# Floating windows
+for_window [class="pavucontrol"] floating enable
+for_window [class="Gpick"] floating enable, resize set 800 400
