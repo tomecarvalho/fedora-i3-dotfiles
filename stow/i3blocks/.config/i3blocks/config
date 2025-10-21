@@ -28,6 +28,8 @@
 command=~/.config/i3blocks/$BLOCK_NAME/$BLOCK_NAME
 separator_block_width=15
 markup=none
+COLOR_DISABLED=#7c6f64
+COLOR_ENABLED=#b8bb26
 
 # Media player status
 # Left click: previous track
@@ -41,7 +43,7 @@ signal=5
 # Displays volume and output device
 # Left click: toggle output device
 # Middle click: toggle mute
-# TODO: Make right click open volume mixer
+# Right click: open volume mixer app
 [volume-pipewire]
 interval=1
 signal=1

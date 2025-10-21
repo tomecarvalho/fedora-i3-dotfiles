@@ -15,8 +15,10 @@ AUDIO_MUTED_SYMBOL=${AUDIO_MUTED_SYMBOL:-'  '}
 
 AUDIO_DELTA=${AUDIO_DELTA:-5}
 
-# TODO
-MUTED_COLOR=${MUTED_COLOR:-"#7c6f64"}
+# Command to open a volume mixer on right-click (defaults to pavucontrol)
+VOLUME_MIXER=${VOLUME_MIXER:-"pavucontrol"}
+
+MUTED_COLOR=${MUTED_COLOR:-$COLOR_DISABLED}
 
 LONG_FORMAT=${LONG_FORMAT:-'${SYMB} ${VOL}% [${INDEX}:${NAME}]'}
 SHORT_FORMAT=${SHORT_FORMAT:-'${SYMB} ${VOL}% [${INDEX}]'}
@@ -45,8 +47,8 @@ while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
         i) AUDIO_INTERVAL="$OPTARG" ;;
         m) MIXER="$OPTARG" ;;
         s) SCONTROL="$OPTARG" ;;
-        h) printf \
-"Usage: volume-pulseaudio [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
+    h) printf \
+"Usage: volume-pipewire [-S] [-F format] [-f format] [-p] [-a|-d] [-H symb] [-M symb]
         [-L symb] [-X symb] [-T thresh] [-t thresh] [-c color] [-i inter] 
         [-m mixer] [-s scontrol] [-h]
 Options:
@@ -66,6 +68,8 @@ Options:
 -m\tUse the given mixer.
 -s\tUse the given scontrol.
 -h\tShow this help text
+Environment:
+VOLUME_MIXER\tCommand launched on right-click. Default: '$VOLUME_MIXER'
 " && exit 0;;
     esac
 done
@@ -111,7 +115,7 @@ get_mute_status() {
 case "$BLOCK_BUTTON" in
     1) set_default_playback_device_next ;;
     2) amixer -q -D $MIXER sset $SCONTROL $CAPABILITY toggle ;;
-    3) set_default_playback_device_next -1 ;;
+    3) setsid -f "$VOLUME_MIXER" >/dev/null 2>&1 < /dev/null ;;
     4)
         if [ "$(get_mute_status)" = "yes" ]; then
             pactl set-sink-mute @DEFAULT_SINK@ 0

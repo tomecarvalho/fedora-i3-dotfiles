@@ -2,7 +2,7 @@
 
 ICON_ON=${ICON_ON:-""}
 ICON_OFF=${ICON_OFF:-""}
-COLOR_OFF=${COLOR_OFF:-"#7c6f64"}
+COLOR_OFF=${COLOR_OFF:-$COLOR_DISABLED}
 
 toggle() { pactl set-source-mute @DEFAULT_SOURCE@ toggle; }
 set_low() {

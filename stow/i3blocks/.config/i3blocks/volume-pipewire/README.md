@@ -81,3 +81,4 @@ signal=1
 
 - Always shows the symbol for the current volume threshold, even when muted (no special muted icon)
 - When muted, scrolling to adjust volume will unmute
+- Right click opens a volume mixer app (defaults to `pavucontrol`, can be replaced through environment variable)
