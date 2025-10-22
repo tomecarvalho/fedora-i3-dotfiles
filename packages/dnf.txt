@@ -37,6 +37,8 @@ tree-sitter-cli
 xclip
 xdotool
 xev
+xfce4-clipman-plugin
+xfce4-screenshooter
 xinput
 xrandr
 zoxide
