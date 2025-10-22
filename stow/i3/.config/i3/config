@@ -54,15 +54,15 @@ $xnsi nm-applet
 # blueman: Bluetooth manager applet
 $xnsi blueman-applet
 
+# XFCE Clipman: clipboard manager, also allows XFCE Screenshooter to copy to clipboard
+$xnsi xfce4-clipman
+
 # Gnome keyring
 $xnsi dbus-update-activation-environment --all
 $xnsi ~/.config/i3/scripts/gnome-keyring.sh
 
 # dunst: Notifications
 $xnsi dunst
-
-# greenclip: Clipboard manager
-$xnsi greenclip daemon
 
 # picom: Compositor
 $xansi picom --config ~/.config/picom/picom.conf
@@ -112,8 +112,8 @@ bindsym $mod+d $xnsi "rofi -show combi -combi-modi 'drun,run,ssh'"
 # rofi windows
 bindsym $mod+Tab $xnsi "rofi -show window"
 
-# rofi clipboard (greenclip)
-bindsym $mod+v $xnsi rofi -show clipboard
+# xfce4-clipman popup
+bindsym $mod+v $xnsi xfce4-popup-clipman
 
 # rofi power menu
 bindsym $mod+Escape exec rofi -show power-menu -modi "power-menu:~/.config/rofi/scripts/rofi-power-menu.sh --choices=shutdown/reboot/suspend/logout/lockscreen --confirm=''"
@@ -178,6 +178,14 @@ bindsym $mod+Shift+r restart
 
 # Exit i3
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# Screenshot with xfce4-screenshooter
+# Print: Full popup with all options
+# Mod Print: Quick area screenshot to clipboard
+# Mod Shift Print: Quick window screenshot to clipboard
+bindsym Print exec xfce4-screenshooter
+bindsym $mod+Print exec xfce4-screenshooter --region --clipboard
+bindsym $mod+Shift+Print exec xfce4-screenshooter --window --clipboard
 
 # Resize mode
 mode "Resize" {

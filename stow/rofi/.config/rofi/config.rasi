@@ -1,5 +1,5 @@
 configuration {
-	modes: "combi,drun,run,window,clipboard:greenclip print,ssh";
+	modes: "combi,drun,run,window,ssh";
 	combi-modes: "drun,run,ssh";
 	font: "monospace 13";
 	show-icons: true;
@@ -144,7 +144,6 @@ configuration {
 	display-drun: "󰌧";
 	display-run: "";
 	display-window: "";
-	display-clipboard: "";
 	display-ssh: "";
   timeout {
       action: "kb-cancel";

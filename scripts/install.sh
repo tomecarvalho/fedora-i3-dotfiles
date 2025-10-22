@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-GREENCLIP_URL="https://github.com/erebe/greenclip/releases/download/v4.2/greenclip"
 JETBRAINS_MONO_FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip"
 INTER_FONT_URL="https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
 OH_MY_ZSH_INSTALL_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
@@ -17,7 +16,6 @@ ALL_STEPS=(
   flathub
   vscode
   oh_my_zsh
-  greenclip
   default_zsh
   jetbrains_mono_font
   inter_font
@@ -106,21 +104,6 @@ oh_my_zsh() {
   if ! command -v starship &> /dev/null; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y
   fi
-}
-
-greenclip() {
-  echo "[greenclip] Install greenclip"
-
-  if command -v greenclip &> /dev/null; then
-    echo "greenclip is already installed"
-    return
-  fi
-
-  # Install for all users
-  GREENCLIP_PATH="/usr/bin/greenclip"
-  sudo curl -L -o "$GREENCLIP_PATH" "$GREENCLIP_URL"
-  sudo chmod +x "$GREENCLIP_PATH"
-  echo "greenclip installed to $GREENCLIP_PATH"
 }
 
 default_zsh() {
