@@ -6,6 +6,7 @@ brightnessctl
 curl
 dunst
 fastfetch
+fd-find
 flatpak
 fuse
 fzf
@@ -13,6 +14,7 @@ git
 gnome-keyring
 gpick
 i3blocks
+lazygit
 lxappearance
 perl-Env
 picom
@@ -24,11 +26,13 @@ neovim
 ranger
 redshift
 redshift-gtk
+ripgrep
 rofi
 seahorse
 stow
 thunderbird
 tmux
+tree-sitter-cli
 xclip
 xdotool
 xev

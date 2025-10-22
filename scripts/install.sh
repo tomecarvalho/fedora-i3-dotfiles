@@ -7,12 +7,27 @@ OH_MY_ZSH_INSTALL_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/
 
 set -euo pipefail
 
-ALL_STEPS=(1 2 3 4 5 6 7 8 9 10 11 12)
+# Default, ordered list of descriptive step names
+ALL_STEPS=(
+  scripts_permission
+  dnf_up
+  rpm_fusion
+  copr
+  dnf_install
+  flathub
+  vscode
+  oh_my_zsh
+  greenclip
+  default_zsh
+  jetbrains_mono_font
+  inter_font
+  gsettings_theme
+)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-step1() {
-  echo "1. Add run permission to scripts"
+scripts_permission() {
+  echo "[scripts_permission] Add run permission to scripts"
 
   STOW_DIR="$SCRIPT_DIR/../stow"
 
@@ -21,22 +36,27 @@ step1() {
   chmod +x "$STOW_DIR/i3/.config/i3/scripts/gnome-keyring.sh"
   chmod +x "$STOW_DIR/rofi/.config/rofi/scripts/rofi-power-menu.sh"
 
-  echo "1. Run permission added to scripts"
+  echo "[scripts_permission] Run permission added to scripts"
 }
 
-step2() {
-  echo "2. Update packages"
+dnf_up() {
+  echo "[dnf_up] Update packages"
   sudo dnf up -y --refresh
 }
 
-step3() {
-  echo "3. Enable RPM Fusion Free and Nonfree"
-  sudo dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-  sudo dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+rpm_fusion() {
+  echo "[rpm_fusion] Enable RPM Fusion Free and Nonfree"
+  sudo dnf in -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+  sudo dnf in -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 }
 
-step4() {
-  echo "4. Install DNF packages"
+copr() {
+  echo "[copr] Enable COPR repository for lazygit"
+  sudo dnf copr enable -y dejan/lazygit
+}
+
+dnf_install() {
+  echo "[dnf_install] Install DNF packages"
   PKG_FILE="$SCRIPT_DIR/../packages/dnf.txt"
 
   if [[ ! -f "$PKG_FILE" ]]; then
@@ -46,32 +66,32 @@ step4() {
 
   mapfile -t packages < <(grep -vE '^\s*($|#)' "$PKG_FILE")
 
-  echo "4. Installing ${#packages[@]} packages with dnf..."
-  sudo dnf install -y "${packages[@]}"
+  echo "[dnf_install] Installing ${#packages[@]} packages with dnf..."
+  sudo dnf in -y "${packages[@]}"
 
-  echo "4. Removing unnecessary packages"
+  echo "[dnf_install] Removing unnecessary packages"
   sudo dnf rm -y xfce4-terminal volumeicon
 
-  echo "4. Replacing ffmpeg-free with ffmpeg"
-  sudo dnf install -y ffmpeg --allowerasing
+  echo "[dnf_install] Replacing ffmpeg-free with ffmpeg"
+  sudo dnf in -y ffmpeg --allowerasing
 }
 
-step5() {
-  echo "5. Enable Flathub"
+flathub() {
+  echo "[flathub] Enable Flathub"
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 }
 
-step6() {
-  echo "6. Add VS Code repository"
+vscode() {
+  echo "[vscode] Add VS Code repository and install Code"
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
   echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\nautorefresh=1\ntype=rpm-md\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
-  echo "6. Install VS Code"
-  sudo dnf check-update
-  sudo dnf install -y code
+  echo "[vscode] Install VS Code"
+  sudo dnf check-update || true
+  sudo dnf in -y code
 }
 
-step7() {
-  echo "7. Install oh-my-zsh"
+oh_my_zsh() {
+  echo "[oh_my_zsh] Install oh-my-zsh"
 
   if [[ -d "$HOME/.oh-my-zsh" ]]; then
     echo "oh-my-zsh is already installed at $HOME/.oh-my-zsh"
@@ -79,7 +99,7 @@ step7() {
     sh -c "$(curl -fsSL $OH_MY_ZSH_INSTALL_URL)"
     # Remove the custom directory, because stow will replace it
     rm -rf "$HOME/.oh-my-zsh/custom"
-    echo "7. [!] The rm command to remove ~/.oh-my-zsh/custom may be executed before oh-my-zsh finishes its installation. In that case, make sure to manually run 'rm -rf ~/.oh-my-zsh/custom' after this script completes."
+    echo "[oh_my_zsh] [!] The rm command to remove ~/.oh-my-zsh/custom may be executed before oh-my-zsh finishes its installation. In that case, make sure to manually run 'rm -rf ~/.oh-my-zsh/custom' after this script completes."
   fi
 
   # Install starship
@@ -88,8 +108,8 @@ step7() {
   fi
 }
 
-step8() {
-  echo "8. Install greenclip"
+greenclip() {
+  echo "[greenclip] Install greenclip"
 
   if command -v greenclip &> /dev/null; then
     echo "greenclip is already installed"
@@ -103,8 +123,8 @@ step8() {
   echo "greenclip installed to $GREENCLIP_PATH"
 }
 
-step9() {
-  echo "9. Make zsh the default shell"
+default_zsh() {
+  echo "[default_zsh] Make zsh the default shell"
 
   if ! command -v zsh &> /dev/null; then
     echo "zsh is not installed. Please install zsh first." >&2
@@ -114,13 +134,13 @@ step9() {
   chsh -s "$(command -v zsh)"
 }
 
-step10() {
-  echo "10. Install JetBrains Mono Nerd Font"
+jetbrains_mono_font() {
+  echo "[jetbrains_mono_font] Install JetBrains Mono Nerd Font"
 
   FONT_DIR="/usr/local/share/fonts/JetBrainsMonoNerdFont"
 
   if fc-list | grep -q "JetBrainsMonoNerdFont"; then
-    echo "10. JetBrains Mono Nerd Font is already installed"
+    echo "JetBrains Mono Nerd Font is already installed"
     return
   fi
   
@@ -136,16 +156,16 @@ step10() {
   # Update font cache
   sudo fc-cache -fv
 
-  echo "10. JetBrains Mono Nerd Font installed to $FONT_DIR"
+  echo "JetBrains Mono Nerd Font installed to $FONT_DIR"
 }
 
-step11() {
-  echo "11. Install Inter Font"
+inter_font() {
+  echo "[inter_font] Install Inter Font"
 
   FONT_DIR="/usr/local/share/fonts/Inter"
 
   if fc-list | grep -q "Inter"; then
-    echo "11. Inter Font is already installed"
+    echo "Inter Font is already installed"
     return
   fi
   
@@ -161,28 +181,41 @@ step11() {
   # Update font cache
   sudo fc-cache -fv
 
-  echo "11. Inter Font installed to $FONT_DIR"
+  echo "Inter Font installed to $FONT_DIR"
 }
 
-step12() {
-  echo "12. Set dark mode and theme in gsettings"
+gsettings_theme() {
+  echo "[gsettings_theme] Set dark mode and theme in gsettings"
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
   gsettings set org.gnome.desktop.interface gtk-theme 'Mint-Y-Dark-Gruvbox'
 }
 
 usage() {
   cat <<EOF
-Usage: $0 [-s "1,2,3"]
+Usage: $0 [-s "step1,step2" | -s "name1,name2"] [-l]
 
 Options:
-  -s, --steps   Comma-separated list of step numbers to run. Steps will be run sequentially in numeric order (duplicates removed). Example: -s "1,3,5"
-  -h, --help    Show this help message
+  -s, --steps   Comma-separated list of steps to run. Accepts either descriptive names or (deprecated) numbers.
+                Steps run in the default order; duplicates are ignored.
+                Examples: -s "dnf_up,rpm_fusion" or -s "2,3"
+  -l, --list    List all available steps in order.
+  -h, --help    Show this help message.
+
+Available steps (in order):
+$(
+  i=1
+  for name in "${ALL_STEPS[@]}"; do
+    printf "  %2d) %s\n" "$i" "$name"
+    ((i++))
+  done
+)
 EOF
 }
 
 # Parse args
 STEPS_ARG=""
-while [[ $# -gt 0 ]]; do
+LIST_ONLY=false
+while [[ $# > 0 ]]; do
   case "$1" in
     -s|--steps)
       if [[ -n "${2-}" ]]; then
@@ -194,6 +227,10 @@ while [[ $# -gt 0 ]]; do
         usage
         exit 2
       fi
+      ;;
+    -l|--list)
+      LIST_ONLY=true
+      shift
       ;;
     -h|--help)
       usage
@@ -207,12 +244,17 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Build ordered list of steps to run
+if [[ "$LIST_ONLY" == true ]]; then
+  usage
+  exit 0
+fi
+
+# Build ordered list of steps to run (names)
 declare -a RUN_STEPS=()
 if [[ -z "$STEPS_ARG" ]]; then
   RUN_STEPS=("${ALL_STEPS[@]}")
 else
-  # split on commas, allow spaces
+  declare -A requested=()
   IFS=',' read -ra raw <<< "$STEPS_ARG"
   for token in "${raw[@]}"; do
     # trim whitespace
@@ -220,33 +262,44 @@ else
     if [[ -z "$step" ]]; then
       continue
     fi
-    if ! [[ "$step" =~ ^[0-9]+$ ]]; then
-      echo "Invalid step: $step" >&2
-      exit 2
+    if [[ "$step" =~ ^[0-9]+$ ]]; then
+      idx=$((10#$step))
+      if (( idx < 1 || idx > ${#ALL_STEPS[@]} )); then
+        echo "Invalid step number: $step" >&2
+        exit 2
+      fi
+      name="${ALL_STEPS[$((idx-1))]}"
+      requested["$name"]=1
+    else
+      # Validate name is in ALL_STEPS
+      valid=false
+      for name in "${ALL_STEPS[@]}"; do
+        if [[ "$name" == "$step" ]]; then
+          valid=true
+          requested["$name"]=1
+          break
+        fi
+      done
+      if [[ "$valid" != true ]]; then
+        echo "Invalid step name: $step" >&2
+        exit 2
+      fi
     fi
-    RUN_STEPS+=("$step")
   done
-  # sort numerically and deduplicate
-  if [[ ${#RUN_STEPS[@]} -gt 0 ]]; then
-    IFS=$'\n' read -r -d '' -a RUN_STEPS < <(printf "%s\n" "${RUN_STEPS[@]}" | sort -n -u && printf '\0')
-  fi
+  # Maintain default order and dedupe
+  for name in "${ALL_STEPS[@]}"; do
+    if [[ -n "${requested[$name]+x}" ]]; then
+      RUN_STEPS+=("$name")
+    fi
+  done
 fi
 
-# Dispatch
+# Dispatch by name with validation
 for s in "${RUN_STEPS[@]}"; do
-  case "$s" in
-    1) step1 ;;
-    2) step2 ;;
-    3) step3 ;;
-    4) step4 ;;
-    5) step5 ;;
-    6) step6 ;;
-    7) step7 ;;
-    8) step8 ;;
-    9) step9 ;;
-    10) step10 ;;
-    11) step11 ;;
-    12) step12 ;;
-    *) echo "Unknown step: $s" >&2; exit 3 ;;
-  esac
+  if declare -F "$s" > /dev/null; then
+    "$s"
+  else
+    echo "Unknown step function: $s" >&2
+    exit 3
+  fi
 done
