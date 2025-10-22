@@ -5,6 +5,7 @@ autorandr
 brightnessctl
 curl
 dunst
+fastfetch
 flatpak
 fuse
 fzf
