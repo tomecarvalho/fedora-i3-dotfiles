@@ -51,6 +51,9 @@ $xnsi xss-lock --transfer-sleep-lock -- i3lock --nofork --color $i3lock_color
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 $xnsi nm-applet
 
+# blueman: Bluetooth manager applet
+$xnsi blueman-applet
+
 # Gnome keyring
 $xnsi dbus-update-activation-environment --all
 $xnsi ~/.config/i3/scripts/gnome-keyring.sh
@@ -222,3 +225,4 @@ for_window [class=.*] border normal 1
 # Floating windows
 for_window [class="pavucontrol"] floating enable
 for_window [class="Gpick"] floating enable, resize set 800 400
+for_window [class="Blueman-manager"] floating enable, resize set 600 800
