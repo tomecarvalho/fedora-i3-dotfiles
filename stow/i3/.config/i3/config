@@ -212,6 +212,7 @@ bar {
   position top
   status_command i3blocks
   tray_output primary
+  tray_padding 4
   font pango:sans-serif 9
   colors {
     background #282828
