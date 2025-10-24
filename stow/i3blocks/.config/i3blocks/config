@@ -87,6 +87,14 @@ STRFTIME_FORMAT=%a %d/%m/%Y %R
 TZONES=$DEFAULT_TZ,UTC
 TZ_LABELS=,UTC
 CALENDAR_APP=thunderbird -calendar
+# Last block padding
+separator=false
+separator_block_width=6
+
+# Spacer
+[spacer]
+command=echo ""
+interval=once
 
 # OpenVPN support
 #

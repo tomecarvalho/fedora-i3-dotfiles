@@ -1,1 +1,2 @@
 it.mijorus.gearlever
+com.stremio.Stremio
