@@ -30,6 +30,7 @@ redshift-gtk
 ripgrep
 rofi
 seahorse
+snapd
 stow
 thunderbird
 tmux
