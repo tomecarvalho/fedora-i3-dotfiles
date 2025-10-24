@@ -5,6 +5,7 @@ autorandr
 blueman
 brightnessctl
 curl
+discord
 dunst
 fastfetch
 fd-find
