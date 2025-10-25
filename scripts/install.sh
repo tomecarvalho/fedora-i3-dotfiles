@@ -14,6 +14,8 @@ ALL_STEPS=(
   copr
   dnf_install
   flathub
+  flatpak_install
+  snap_install
   vscode
   oh_my_zsh
   default_zsh
@@ -23,6 +25,19 @@ ALL_STEPS=(
 )
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Read package list from a file, filtering out empty lines and comments
+read_package_list() {
+  local pkg_file="$1"
+  
+  if [[ ! -f "$pkg_file" ]]; then
+    echo "Package list not found: $pkg_file" >&2
+    exit 1
+  fi
+  
+  mapfile -t packages < <(grep -vE '^\s*($|#)' "$pkg_file")
+  echo "${packages[@]}"
+}
 
 scripts_permission() {
   echo "[scripts_permission] Add run permission to scripts"
@@ -57,12 +72,7 @@ dnf_install() {
   echo "[dnf_install] Install DNF packages"
   PKG_FILE="$SCRIPT_DIR/../packages/dnf.txt"
 
-  if [[ ! -f "$PKG_FILE" ]]; then
-    echo "Package list not found: $PKG_FILE" >&2
-    exit 1
-  fi
-
-  mapfile -t packages < <(grep -vE '^\s*($|#)' "$PKG_FILE")
+  local packages=($(read_package_list "$PKG_FILE"))
 
   echo "[dnf_install] Installing ${#packages[@]} packages with dnf..."
   sudo dnf in -y "${packages[@]}"
@@ -77,6 +87,44 @@ dnf_install() {
 flathub() {
   echo "[flathub] Enable Flathub"
   flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+}
+
+flatpak_install() {
+  echo "[flatpak_install] Install Flatpak packages"
+  PKG_FILE="$SCRIPT_DIR/../packages/flatpak.txt"
+
+  local packages=($(read_package_list "$PKG_FILE"))
+
+  if [[ ${#packages[@]} -eq 0 ]]; then
+    echo "[flatpak_install] No packages to install"
+    return
+  fi
+
+  echo "[flatpak_install] Installing ${#packages[@]} packages with flatpak..."
+  for package in "${packages[@]}"; do
+    flatpak install -y flathub "$package"
+  done
+}
+
+snap_install() {
+  echo "[snap_install] Install Snap packages"
+  PKG_FILE="$SCRIPT_DIR/../packages/snap.txt"
+
+  local packages=($(read_package_list "$PKG_FILE"))
+
+  if [[ ${#packages[@]} -eq 0 ]]; then
+    echo "[snap_install] No packages to install"
+    return
+  fi
+
+  echo "[snap_install] Enabling snapd service..."
+  sudo systemctl enable --now snapd.socket
+  sudo ln -sf /var/lib/snapd/snap /snap 2>/dev/null || true
+
+  echo "[snap_install] Installing ${#packages[@]} packages with snap..."
+  for package in "${packages[@]}"; do
+    sudo snap install "$package"
+  done
 }
 
 vscode() {
@@ -171,6 +219,11 @@ gsettings_theme() {
   echo "[gsettings_theme] Set dark mode and theme in gsettings"
   gsettings set org.gnome.desktop.interface color-scheme prefer-dark
   gsettings set org.gnome.desktop.interface gtk-theme 'Mint-Y-Dark-Gruvbox'
+}
+
+node() {
+  echo "[node] Removing Node packages and installing NVM, PNPM"
+  sudo dnf remove -y nodejs nodejs-docs nodejs-full-i18n nodejs-npm
 }
 
 usage() {
