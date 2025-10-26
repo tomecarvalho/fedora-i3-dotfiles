@@ -21,6 +21,7 @@ ALL_STEPS=(
   luarocks
   vscode
   node
+  pnpm_install
   oh_my_zsh
   default_zsh
   jetbrains_mono_font
@@ -269,6 +270,22 @@ node() {
 
   echo "[node] Installing PNPM globally via NPM"
   npm install -g pnpm
+
+  echo "[node] Set up PNPM global packages directory"
+  pnpm setup
+}
+
+pnpm_install() {
+  echo "[pnpm_install] Install PNPM packages"
+  PKG_FILE="$SCRIPT_DIR/../packages/pnpm.txt"
+
+  if [[ ! -f "$PKG_FILE" ]]; then
+    echo "[pnpm_install] No PNPM package list found at $PKG_FILE, skipping"
+    return
+  fi
+
+  echo "[pnpm_install] Installing PNPM packages..."
+  pnpm add -g --filter global --workspace-root --requirement "$PKG_FILE"
 }
 
 lightdm() {
