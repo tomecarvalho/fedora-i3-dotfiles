@@ -1,0 +1,7 @@
+{
+  "git.ignoreSubmodules": true,
+  "githubPullRequests.ignoreSubmodules": true,
+  "git.ignoredRepositories": [
+    "**/zsh-autosuggestions"
+  ]
+}
