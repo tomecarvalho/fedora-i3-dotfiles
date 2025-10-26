@@ -18,6 +18,7 @@ gpick
 i3blocks
 lazygit
 lxappearance
+numlockx
 perl-Env
 picom
 playerctl
