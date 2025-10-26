@@ -1,1 +1,2 @@
 @mermaid-js/mermaid-cli
+neovim
