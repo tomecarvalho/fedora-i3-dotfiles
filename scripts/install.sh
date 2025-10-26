@@ -22,6 +22,7 @@ ALL_STEPS=(
   jetbrains_mono_font
   inter_font
   gsettings_theme
+  lightdm
 )
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -224,6 +225,67 @@ gsettings_theme() {
 node() {
   echo "[node] Removing Node packages and installing NVM, PNPM"
   sudo dnf remove -y nodejs nodejs-docs nodejs-full-i18n nodejs-npm
+  # TODO: Complete this
+}
+
+lightdm() {
+  echo "[lightdm] Configuring NumLock in LightDM"
+
+  # If /etc/lightdm/lightdm.conf exists
+  if [[ -f /etc/lightdm/lightdm.conf ]]; then
+    FILE="/etc/lightdm/lightdm.conf"
+
+    # Warn if numlockx is not available
+    if ! command -v numlockx >/dev/null 2>&1; then
+      echo "[lightdm] Warning: 'numlockx' is not installed; the greeter script may not work until it's installed."
+    fi
+
+    # If there is already an uncommented greeter-setup-script, do not overwrite it
+    if grep -Eq '^[[:space:]]*greeter-setup-script[[:space:]]*=' "$FILE"; then
+      echo "[lightdm] Existing greeter-setup-script found; not modifying."
+    else
+      # Otherwise, add the greeter-setup-script right below the [Seat:*] line if present
+      if grep -Eq '^[[:space:]]*\[Seat:\*\][[:space:]]*$' "$FILE"; then
+        echo "[lightdm] Inserting greeter-setup-script below [Seat:*] section header."
+        sudo sed -i '/^[[:space:]]*\[Seat:\*\][[:space:]]*$/a greeter-setup-script=/usr/bin/numlockx on' "$FILE"
+      else
+        # Fallback: if [Seat:*] is not found, append a new section at the end
+        echo "[lightdm] [Seat:*] section not found; appending a new section at end of file."
+        sudo bash -c 'printf "\n[Seat:*]\n%s\n" "greeter-setup-script=/usr/bin/numlockx on" >> /etc/lightdm/lightdm.conf'
+      fi
+    fi
+  else
+    echo "/etc/lightdm/lightdm.conf not found, skipping NumLock configuration"
+  fi
+
+  # Also configure GTK greeter: set "numlock = on" within the [greeter] section
+  GTK_CONF="/etc/lightdm/lightdm-gtk-greeter.conf"
+  if [[ -f "$GTK_CONF" ]]; then
+    echo "[lightdm] Configuring numlock = on in lightdm-gtk-greeter.conf"
+
+    # Check if an uncommented numlock setting already exists within the [greeter] section
+    if awk '
+      BEGIN { in_g=0; found=0 }
+      /^[[:space:]]*\[/ {
+        # enter a section; track if it is [greeter]
+        if ($0 ~ /^[[:space:]]*\[greeter\][[:space:]]*$/) in_g=1; else in_g=0
+      }
+      in_g && $0 ~ /^[[:space:]]*numlock[[:space:]]*=/ { found=1 }
+      END { exit found ? 0 : 1 }
+    ' "$GTK_CONF"; then
+      echo "[lightdm] Existing numlock setting in [greeter]; not modifying."
+    else
+      if grep -Eq '^[[:space:]]*\[greeter\][[:space:]]*$' "$GTK_CONF"; then
+        echo "[lightdm] Inserting 'numlock = on' below [greeter] section header."
+        sudo sed -i '/^[[:space:]]*\[greeter\][[:space:]]*$/a numlock = on' "$GTK_CONF"
+      else
+        echo "[lightdm] [greeter] section not found; appending a new section at end of file."
+        sudo bash -c 'printf "\n[greeter]\nnumlock = on\n" >> /etc/lightdm/lightdm-gtk-greeter.conf'
+      fi
+    fi
+  else
+    echo "[lightdm] $GTK_CONF not found; skipping GTK greeter numlock configuration"
+  fi
 }
 
 usage() {
