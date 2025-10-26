@@ -22,6 +22,10 @@ unset rc
 # gnome-keyring environment variables
 [ -f ~/.gnome-keyring-env ] && . ~/.gnome-keyring-env
 
+# Load NVM. ZSH uses zsh-nvm as a better alternative, because it allows lazy loading.
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # Load NVM
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Load NVM bash_completion
+
 # Aliases
 [ -f ~/.aliases ] && . ~/.aliases
 

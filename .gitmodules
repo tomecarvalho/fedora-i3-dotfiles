@@ -1,3 +1,6 @@
 [submodule "stow/oh-my-zsh/.oh-my-zsh/custom/plugins/zsh-autosuggestions"]
 	path = stow/oh-my-zsh/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
+[submodule "stow/oh-my-zsh/.oh-my-zsh/custom/plugins/zsh-nvm"]
+	path = stow/oh-my-zsh/.oh-my-zsh/custom/plugins/zsh-nvm
+	url = https://github.com/lukechilds/zsh-nvm

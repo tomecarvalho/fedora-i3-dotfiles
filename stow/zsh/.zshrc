@@ -1,7 +1,8 @@
 # oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
-plugins=(git zsh-autosuggestions)
+export NVM_LAZY_LOAD=true
+plugins=(git zsh-nvm zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
 
 # gnome-keyring environment variables
