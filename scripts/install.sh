@@ -17,6 +17,8 @@ ALL_STEPS=(
   flathub
   flatpak_install
   snap_install
+  pip_install
+  luarocks
   vscode
   node
   oh_my_zsh
@@ -128,6 +130,24 @@ snap_install() {
   for package in "${packages[@]}"; do
     sudo snap install "$package"
   done
+}
+
+pip_install() {
+  echo "[pip_install] Install pip packages"
+  PKG_FILE="$SCRIPT_DIR/../packages/pip.txt"
+
+  if [[ ! -f "$PKG_FILE" ]]; then
+    echo "[pip_install] No pip package list found at $PKG_FILE, skipping"
+    return
+  fi
+
+  echo "[pip_install] Installing pip packages..."
+  pip install --user --requirement "$PKG_FILE"
+}
+
+luarocks() {
+  echo "[luarocks] Install LuaRocks via Hererocks (Lua 5.1) for LazyVim"
+  hererocks ~/.local/share/nvim/lazy-rocks/hererocks --lua 5.1 --luarocks latest
 }
 
 vscode() {
