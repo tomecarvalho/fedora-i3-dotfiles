@@ -35,6 +35,8 @@ ripgrep
 rofi
 seahorse
 snapd
+sqlite
+sqlite-devel
 stow
 thunderbird
 tmux
