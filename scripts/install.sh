@@ -31,25 +31,17 @@ ALL_STEPS=(
 )
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PKGS_DIR="$SCRIPT_DIR/../packages/general"
 
-# Read package list from a file, filtering out empty lines and comments
-read_package_list() {
-  local pkg_file="$1"
-  
-  if [[ ! -f "$pkg_file" ]]; then
-    echo "Package list not found: $pkg_file" >&2
-    exit 1
-  fi
-  
-  mapfile -t packages < <(grep -vE '^\s*($|#)' "$pkg_file")
-  echo "${packages[@]}"
-}
+source "$SCRIPT_DIR/utils.sh"
 
 scripts_permission() {
   echo "[scripts_permission] Add run permission to scripts"
 
   STOW_DIR="$SCRIPT_DIR/../stow"
 
+  chmod +x "$SCRIPT_DIR/utils.sh"
+  chmod +x "$SCRIPT_DIR/install-work.sh"
   chmod +x "$SCRIPT_DIR/secure-boot-key.sh"
   chmod +x "$SCRIPT_DIR/nvidia-drivers.sh"
   chmod +x "$STOW_DIR/i3/.config/i3/scripts/gnome-keyring.sh"
@@ -76,7 +68,7 @@ copr() {
 
 dnf_install() {
   echo "[dnf_install] Install DNF packages"
-  PKG_FILE="$SCRIPT_DIR/../packages/dnf.txt"
+  PKG_FILE="$PKGS_DIR/dnf.txt"
 
   local packages=($(read_package_list "$PKG_FILE"))
 
@@ -97,7 +89,7 @@ flathub() {
 
 flatpak_install() {
   echo "[flatpak_install] Install Flatpak packages"
-  PKG_FILE="$SCRIPT_DIR/../packages/flatpak.txt"
+  PKG_FILE="$PKGS_DIR/flatpak.txt"
 
   local packages=($(read_package_list "$PKG_FILE"))
 
@@ -114,7 +106,7 @@ flatpak_install() {
 
 snap_install() {
   echo "[snap_install] Install Snap packages"
-  PKG_FILE="$SCRIPT_DIR/../packages/snap.txt"
+  PKG_FILE="$PKGS_DIR/snap.txt"
 
   local packages=($(read_package_list "$PKG_FILE"))
 
@@ -135,7 +127,7 @@ snap_install() {
 
 pip_install() {
   echo "[pip_install] Install pip packages"
-  PKG_FILE="$SCRIPT_DIR/../packages/pip.txt"
+  PKG_FILE="$PKGS_DIR/pip.txt"
 
   if [[ ! -f "$PKG_FILE" ]]; then
     echo "[pip_install] No pip package list found at $PKG_FILE, skipping"
@@ -277,7 +269,7 @@ node() {
 
 pnpm_install() {
   echo "[pnpm_install] Install PNPM packages"
-  PKG_FILE="$SCRIPT_DIR/../packages/pnpm.txt"
+  PKG_FILE="$PKGS_DIR/pnpm.txt"
 
   if [[ ! -f "$PKG_FILE" ]]; then
     echo "[pnpm_install] No PNPM package list found at $PKG_FILE, skipping"

@@ -1,0 +1,4 @@
+it.mijorus.gearlever
+com.stremio.Stremio
+org.telegram.desktop
+org.signal.Signal
