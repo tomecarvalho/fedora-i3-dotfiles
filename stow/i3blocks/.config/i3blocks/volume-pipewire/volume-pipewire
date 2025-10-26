@@ -31,6 +31,14 @@ SUBSCRIBE=${SUBSCRIBE:-0}
 MIXER=${MIXER:-""}
 SCONTROL=${SCONTROL:-""}
 
+# Array to store device name aliases (format: "original_name:alias")
+# Can be set via DEVICE_ALIASES environment variable as comma or semicolon separated list
+declare -a DEVICE_ALIASES_ARRAY
+if [[ -n "$DEVICE_ALIASES" ]]; then
+    # Split by comma or semicolon
+    IFS=',;' read -ra DEVICE_ALIASES_ARRAY <<< "$DEVICE_ALIASES"
+fi
+
 while getopts F:Sf:adH:M:L:X:T:t:C:c:i:m:s:h opt; do
     case "$opt" in
         S) SUBSCRIBE=1 ;;
@@ -71,6 +79,9 @@ Options:
 -h\tShow this help text
 Environment:
 VOLUME_MIXER\tCommand launched on right-click. Default: '$VOLUME_MIXER'
+DEVICE_ALIASES\tComma or semicolon separated list of device name aliases.
+\tFormat: 'original:alias,original2:alias2' or 'original:alias;original2:alias2'
+\tExample: DEVICE_ALIASES='ALC287 Analog:Laptop,HDMI 0:HDMI'
 " && exit 0;;
     esac
 done
@@ -111,6 +122,31 @@ function set_default_playback_device_next {
 
 get_mute_status() {
     pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}'
+}
+
+function apply_device_alias {
+    local device_name="$1"
+    
+    # Check if there are any aliases defined
+    if [[ ${#DEVICE_ALIASES_ARRAY[@]} -eq 0 ]]; then
+        echo "$device_name"
+        return
+    fi
+    
+    # Try to find a matching alias
+    for alias_pair in "${DEVICE_ALIASES_ARRAY[@]}"; do
+        local original="${alias_pair%%:*}"
+        local alias="${alias_pair#*:}"
+        
+        # Check for exact match or partial match (case-insensitive)
+        if [[ "${device_name,,}" == "${original,,}" ]] || [[ "${device_name,,}" == *"${original,,}"* ]]; then
+            echo "$alias"
+            return
+        fi
+    done
+    
+    # No alias found, return original name
+    echo "$device_name"
 }
 
 case "$BLOCK_BUTTON" in
@@ -158,6 +194,9 @@ sed 's/.*= "\(.*\)".*/\1/')
         DESCRIPTION=$(pactl list sinks  | grep "State\: RUNNING" -B4 -A55 | grep 'Description: ' | sed 's/^.*: //')
         NAME=${DESCRIPTION:-$NAME}
     fi
+
+    # Apply device name alias if configured
+    NAME=$(apply_device_alias "$NAME")
 
     # Always show the symbol for the current volume threshold, even when muted
     SYMB=$AUDIO_HIGH_SYMBOL

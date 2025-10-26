@@ -45,6 +45,7 @@ signal=5
 interval=1
 signal=1
 LONG_FORMAT="${SYMB} ${VOL}% [${NAME}]"
+DEVICE_ALIASES=ALC287 Analog:Laptop;HDMI 0:HDMI
 
 # Microphone volume control
 # Left click: set low volume preset
