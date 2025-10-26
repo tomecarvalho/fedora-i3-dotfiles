@@ -3,6 +3,7 @@
 JETBRAINS_MONO_FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip"
 INTER_FONT_URL="https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
 OH_MY_ZSH_INSTALL_URL="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+NVM_INSTALL_URL="https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh"
 
 set -euo pipefail
 
@@ -17,6 +18,7 @@ ALL_STEPS=(
   flatpak_install
   snap_install
   vscode
+  node
   oh_my_zsh
   default_zsh
   jetbrains_mono_font
@@ -225,7 +227,28 @@ gsettings_theme() {
 node() {
   echo "[node] Removing Node packages and installing NVM, PNPM"
   sudo dnf remove -y nodejs nodejs-docs nodejs-full-i18n nodejs-npm
-  # TODO: Complete this
+
+  # Install NVM if not already installed in ~/.nvm
+  if [[ -d "$HOME/.nvm" ]]; then
+    echo "[node] NVM is already installed"
+  else
+    echo "[node] Installing NVM"
+    curl -o- "$NVM_INSTALL_URL" | bash
+  fi
+
+  # Load NVM
+  NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+  echo "[node] Installing latest LTS version of Node via NVM"
+  nvm install --lts
+
+  echo "[node] Setting LTS as default Node version"
+  nvm use --lts
+  nvm alias default node
+
+  echo "[node] Installing PNPM globally via NPM"
+  npm install -g pnpm
 }
 
 lightdm() {
