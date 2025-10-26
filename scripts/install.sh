@@ -18,6 +18,7 @@ ALL_STEPS=(
   flatpak_install
   snap_install
   pip_install
+  luarocks
   vscode
   node
   oh_my_zsh
