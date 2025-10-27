@@ -280,6 +280,14 @@ pnpm_install() {
   pnpm add -g --filter global --workspace-root --requirement "$PKG_FILE"
 }
 
+docker() {
+  sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
+  sudo dnf in -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  sudo systemctl start docker
+  sudo groupadd docker
+  sudo usermod -aG docker $USER
+}
+
 lightdm() {
   echo "[lightdm] Configuring NumLock in LightDM"
 
