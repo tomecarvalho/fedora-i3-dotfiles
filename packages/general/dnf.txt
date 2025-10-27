@@ -17,7 +17,11 @@ gnome-keyring
 gpick
 i3blocks
 lazygit
+libreoffice-calc
+libreoffice-impress
+libreoffice-writer
 lxappearance
+neovim
 numlockx
 perl-Env
 picom
@@ -25,8 +29,8 @@ playerctl
 python3
 python3-pip
 qalculate-gtk
+qbittorrent
 qt5ct
-neovim
 ranger
 readline-devel
 redshift
@@ -41,6 +45,7 @@ stow
 thunderbird
 tmux
 tree-sitter-cli
+vlc
 xclip
 xdotool
 xev
