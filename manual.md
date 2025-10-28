@@ -4,4 +4,5 @@ List of software that must be installed manually.
 
 ## Work
 
-- [Zoom](https://zoom.us/download?os=linux)
+- [Zoom (rpm package)](https://zoom.us/download?os=linux)
+- [Cursor (rpm package)](https://cursor.com/)
