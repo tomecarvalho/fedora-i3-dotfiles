@@ -44,6 +44,7 @@ scripts_permission() {
   chmod +x "$SCRIPT_DIR/install-work.sh"
   chmod +x "$SCRIPT_DIR/secure-boot-key.sh"
   chmod +x "$SCRIPT_DIR/nvidia-drivers.sh"
+  chmod +x "$SCRIPT_DIR/oh-my-zsh-update.sh"
   chmod +x "$STOW_DIR/i3/.config/i3/scripts/gnome-keyring.sh"
   chmod +x "$STOW_DIR/rofi/.config/rofi/scripts/rofi-power-menu.sh"
 

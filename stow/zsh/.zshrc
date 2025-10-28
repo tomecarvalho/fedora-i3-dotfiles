@@ -1,6 +1,10 @@
 # oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME="robbyrussell"
+# Uncomment this so "omz update" doesn't fail
+# Make sure it points to the correct location based on your cloned dotfiles' location
+# oh-my-zsh-update.sh handles this automatically
+# ZSH_CUSTOM="$HOME/dotfiles/stow/oh-my-zsh/.oh-my-zsh/custom/"
 export NVM_LAZY_LOAD=true
 plugins=(git zsh-nvm zsh-autosuggestions)
 source $ZSH/oh-my-zsh.sh
