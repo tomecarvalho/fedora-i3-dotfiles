@@ -43,6 +43,7 @@ sqlite
 sqlite-devel
 stow
 thunderbird
+timeshift
 tmux
 tree-sitter-cli
 vlc
