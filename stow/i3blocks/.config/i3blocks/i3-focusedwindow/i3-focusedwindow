@@ -1,15 +1,24 @@
 #!/usr/bin/env bash
 # Author: Kn
 
+# Default to COLOR_ACTIVE_WINDOW if COLOR_LABEL is not set
+COLOR_LABEL="${COLOR_LABEL:-$COLOR_ACTIVE_WINDOW}"
+LABEL="${LABEL:-  }"
+
 while :
 do
   ID=$(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}')
   if [[ $1 ]] 
   then
     TITLE=$(xprop -id $ID -len $1 | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2)
-    echo "$TITLE"
   else
     TITLE=$(xprop -id $ID | awk '/_NET_WM_NAME/{$1=$2="";print}' | cut -d'"' -f2)
-    echo "$TITLE"
+  fi
+  
+  # Only display label and title if there's an active window
+  if [[ -n "$TITLE" ]]; then
+    echo "<span foreground=\"$COLOR_LABEL\">$LABEL</span>$TITLE"
+  else
+    echo ""
   fi
 done

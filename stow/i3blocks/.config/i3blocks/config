@@ -27,6 +27,11 @@ COLOR_DISABLED=#7c6f64
 COLOR_ENABLED=#b8bb26
 COLOR_ICON_INTERACTABLE=#83a598
 COLOR_ICON_INFO=#fabd2f
+COLOR_ACTIVE_WINDOW=#8ec07c
+
+[i3-focusedwindow]
+interval=persist
+LABEL=󰣆   
 
 # Media player status
 # Left click: previous track
