@@ -28,6 +28,7 @@ ALL_STEPS=(
   inter_font
   gsettings_theme
   lightdm
+  snapper
 )
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -347,6 +348,23 @@ lightdm() {
   else
     echo "[lightdm] $GTK_CONF not found; skipping GTK greeter numlock configuration"
   fi
+}
+
+snapper() {
+  echo "[snapper] Configure snapper for Btrfs snapshots"
+
+  # Create a snapper config for the root filesystem
+  if sudo snapper list | grep -q "^root[[:space:]]"; then
+    echo "[snapper] Snapper config for root already exists"
+  else
+    echo "[snapper] Creating snapper config for root"
+    sudo snapper -c root create-config /
+  fi
+
+  # Set up automatic snapshots via systemd timers
+  echo "[snapper] Enabling snapper-timeline.timer and snapper-cleanup.timer"
+  sudo systemctl enable --now snapper-timeline.timer
+  sudo systemctl enable --now snapper-cleanup.timer
 }
 
 usage() {

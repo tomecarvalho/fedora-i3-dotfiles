@@ -4,6 +4,7 @@ arandr
 autorandr
 blueman
 brightnessctl
+btrfs-assistant
 curl
 discord
 dunst
@@ -39,11 +40,11 @@ ripgrep
 rofi
 seahorse
 snapd
+snapper
 sqlite
 sqlite-devel
 stow
 thunderbird
-timeshift
 tmux
 tree-sitter-cli
 vlc
