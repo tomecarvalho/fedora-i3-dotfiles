@@ -27,6 +27,7 @@ ZSH_SYNTAX_HIGHLIGHTING="/usr/share/zsh-syntax-highlighting/zsh-syntax-highlight
 
 # Aliases
 [ -f ~/.aliases ] && . ~/.aliases
+[ -f ~/.private.aliases ] && . ~/.private.aliases
 
 # starship.rs
 eval "$(starship init zsh)"
