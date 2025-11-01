@@ -10,6 +10,7 @@ discord
 dunst
 fastfetch
 fd-find
+fedora-workstation-repositories
 flatpak
 fuse
 fzf

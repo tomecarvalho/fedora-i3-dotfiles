@@ -20,6 +20,7 @@ ALL_STEPS=(
   pip_install
   luarocks
   vscode
+  chrome
   node
   pnpm_install
   oh_my_zsh
@@ -152,6 +153,12 @@ vscode() {
   echo "[vscode] Install VS Code"
   sudo dnf check-update || true
   sudo dnf in -y code
+}
+
+chrome() {
+  echo "[chrome] Enable Chrome repository and install it"
+  sudo dnf config-manager setopt google-chrome.enabled=1
+  sudo dnf in -y google-chrome-stable
 }
 
 oh_my_zsh() {
