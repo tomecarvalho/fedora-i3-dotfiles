@@ -1,2 +1,8 @@
+# Desktop entries cache
 /stow/desktop-entries/.local/share/applications/mimeinfo.cache
+
+# Thunar config (constantly changes due to last window size field)
 /stow/xfce4/.config/xfce4/xfconf/xfce-perchannel-xml/thunar.xml
+
+# Private files
+**/.private*

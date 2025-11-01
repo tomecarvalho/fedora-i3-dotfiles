@@ -1,4 +1,4 @@
-CURSOR_PATH="$HOME/.local/bin/cursor.AppImage"
+CURSOR_PATH="/usr/bin/cursor"
 
 alias cb="xclip -selection clipboard"
 alias cursor="$CURSOR_PATH --no-sandbox"
