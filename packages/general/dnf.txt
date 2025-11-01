@@ -51,6 +51,7 @@ vlc
 xclip
 xdotool
 xev
+xfce-polkit
 xfce4-clipman-plugin
 xfce4-screenshooter
 xinput
