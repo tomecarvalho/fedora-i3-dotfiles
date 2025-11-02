@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Author: Kn
 
-# Default to COLOR_ACTIVE_WINDOW if COLOR_LABEL is not set
-COLOR_LABEL="${COLOR_LABEL:-$COLOR_ACTIVE_WINDOW}"
+COLOR_LABEL="${COLOR_LABEL:-$COLOR_ICON_INFO}"
 LABEL="${LABEL:-  }"
 
 while :

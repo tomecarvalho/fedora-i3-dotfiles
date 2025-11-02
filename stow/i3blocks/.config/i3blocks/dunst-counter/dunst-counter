@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# i3blocks dunst-counter
+# Shows the number of notifications in dunst's history.
+# Left click (BUTTON=1): pop the last notification from history.
+
+# Customization via environment variables:
+# - LABEL_NO_NOTIFICATIONS: icon when count is 0 (default: "󰂚")
+# - LABEL_NOTIFICATIONS: icon when count > 0 (default: "󱅫")
+# - COLOR_DISABLED: when dunstctl is unavailable or error
+# - COLOR_NO_NOTIFICATIONS: when history count is 0
+# - COLOR_NOTIFICATIONS: when history count > 0
+
+LABEL_NO_NOTIFICATIONS="${LABEL_NO_NOTIFICATIONS:-󰂚 }"
+LABEL_NOTIFICATIONS="${LABEL_NOTIFICATIONS:-󱅫 }"
+COLOR_DISABLED="${COLOR_DISABLED:-#7c6f64}"
+COLOR_NO_NOTIFICATIONS="${COLOR_NO_NOTIFICATIONS:-#83a598}"
+COLOR_NOTIFICATIONS="${COLOR_NOTIFICATIONS:-#fabd2f}"
+
+# Handle click: left button pops a notification
+if [[ "${BLOCK_BUTTON:-}" == "1" ]]; then
+	if command -v dunstctl >/dev/null 2>&1; then
+		dunstctl history-pop >/dev/null 2>&1 || true
+	fi
+fi
+
+# Determine count and color
+if ! command -v dunstctl >/dev/null 2>&1; then
+    label="<span color='$COLOR_DISABLED'>$LABEL_NO_NOTIFICATIONS</span>"
+    full_text="${label} -"
+else
+    count="$(dunstctl count history 2>/dev/null || true)"
+    if [[ -z "${count}" || ! "${count}" =~ ^[0-9]+$ ]]; then
+        label="<span color='$COLOR_DISABLED'>$LABEL_NO_NOTIFICATIONS</span>"
+        full_text="${label} -"
+    else
+        if [[ "$count" -gt 0 ]]; then
+            label="<span color='$COLOR_NOTIFICATIONS'>$LABEL_NOTIFICATIONS</span>"
+            full_text="${label} ${count}"
+        else
+            label="<span color='$COLOR_NO_NOTIFICATIONS'>$LABEL_NO_NOTIFICATIONS</span>"
+            full_text="${label} ${count}"
+        fi
+    fi
+fi
+
+# i3blocks protocol: full_text, short_text, color
+echo "$full_text"
+echo "$full_text"
