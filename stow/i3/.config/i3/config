@@ -249,5 +249,6 @@ for_window [class=.*] border pixel 1
 
 # Floating windows
 for_window [class="pavucontrol"] floating enable
+for_window [class="Setroubleshoot"] floating enable
 for_window [class="Gpick"] floating enable, resize set 800 400
 for_window [class="Blueman-manager"] floating enable, resize set 600 800
