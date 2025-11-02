@@ -192,6 +192,8 @@ bindsym $mod+Shift+Print exec xfce4-screenshooter --window --clipboard
 
 # Pop the most recent dunst notification
 bindsym $mod+n exec --no-startup-id dunstctl history-pop && pkill -RTMIN+6 i3blocks
+# Toggle DND (Do Not Disturb)
+bindsym $mod+Ctrl+n exec --no-startup-id dunstctl set-paused toggle && pkill -RTMIN+6 i3blocks
 # Clear dunst notifications
 bindsym $mod+Shift+n exec --no-startup-id sh -c 'dunstctl close-all && dunstctl history-clear && pkill -RTMIN+6 i3blocks'
 

@@ -69,6 +69,7 @@ signal=3
 
 # Dunst notifications counter
 # Left click: pop all notifications
+# Middle click: toggle DND (Do Not Disturb)
 # Right click: clear history
 [dunst-counter]
 interval=5

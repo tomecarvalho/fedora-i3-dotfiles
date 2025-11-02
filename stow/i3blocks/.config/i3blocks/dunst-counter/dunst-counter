@@ -1,24 +1,21 @@
 #!/usr/bin/env bash
 
+# Shows the number of notifications in dunst's history.
+# Left click: pop notification from history
+# Middle click: toggle DND
+# Right click: clear history
+
 set -euo pipefail
 
-# i3blocks dunst-counter
-# Shows the number of notifications in dunst's history.
-# Left click: pop all notifications from history
-# Right click: clear all history
-
-# Customization via environment variables:
-# - LABEL_NO_NOTIFICATIONS: icon when count is 0 (default: "󰂚")
-# - LABEL_NOTIFICATIONS: icon when count > 0 (default: "󱅫")
-# - COLOR_DISABLED: when dunstctl is unavailable or error
-# - COLOR_NO_NOTIFICATIONS: when history count is 0
-# - COLOR_NOTIFICATIONS: when history count > 0
-
-LABEL_NO_NOTIFICATIONS="${LABEL_NO_NOTIFICATIONS:-󰂚 }"
-LABEL_NOTIFICATIONS="${LABEL_NOTIFICATIONS:-󱅫 }"
+# Icons (no trailing ASCII space — we add thin-space when rendering)
+LABEL_NO_NOTIFICATIONS="${LABEL_NO_NOTIFICATIONS:-󰂚}"
+LABEL_NOTIFICATIONS="${LABEL_NOTIFICATIONS:-󱅫}"
+LABEL_DND="${LABEL_DND:-󰂛}"
 COLOR_DISABLED="${COLOR_DISABLED:-#7c6f64}"
 COLOR_NO_NOTIFICATIONS="${COLOR_NO_NOTIFICATIONS:-#83a598}"
 COLOR_NOTIFICATIONS="${COLOR_NOTIFICATIONS:-#fabd2f}"
+# Use a thin space (U+2009) as controlled padding after the icon
+THIN_SPACE=$'\u2009'
 
 # Handle clicks
 if [[ "${BLOCK_BUTTON:-}" == "1" ]]; then
@@ -27,6 +24,11 @@ if [[ "${BLOCK_BUTTON:-}" == "1" ]]; then
 		while [[ "$(dunstctl count history 2>/dev/null || echo 0)" -gt 0 ]]; do
 			dunstctl history-pop >/dev/null 2>&1 || break
 		done
+	fi
+elif [[ "${BLOCK_BUTTON:-}" == "2" ]]; then
+	# Middle click: toggle DND (pause/unpause)
+	if command -v dunstctl >/dev/null 2>&1; then
+		dunstctl set-paused toggle >/dev/null 2>&1 || true
 	fi
 elif [[ "${BLOCK_BUTTON:-}" == "3" ]]; then
 	# Right click: clear all history
@@ -37,20 +39,30 @@ fi
 
 # Determine count and color
 if ! command -v dunstctl >/dev/null 2>&1; then
-    label="<span color='$COLOR_DISABLED'>$LABEL_NO_NOTIFICATIONS</span>"
+    label="<span color='$COLOR_DISABLED'>${LABEL_NO_NOTIFICATIONS}</span>"
     full_text="${label} -"
 else
+    # Check if DND is enabled
+    is_paused="$(dunstctl is-paused 2>/dev/null || echo 'false')"
+    
     count="$(dunstctl count history 2>/dev/null || true)"
     if [[ -z "${count}" || ! "${count}" =~ ^[0-9]+$ ]]; then
-        label="<span color='$COLOR_DISABLED'>$LABEL_NO_NOTIFICATIONS</span>"
+        label="<span color='$COLOR_DISABLED'>${LABEL_NO_NOTIFICATIONS}${THIN_SPACE}</span>"
         full_text="${label} -"
     else
-        if [[ "$count" -gt 0 ]]; then
-            label="<span color='$COLOR_NOTIFICATIONS'>$LABEL_NOTIFICATIONS</span>"
-            full_text="${label} ${count}"
+        if [[ "$is_paused" == "true" ]]; then
+            # DND is enabled - show only the DND indicator (no count)
+            label="<span color='$COLOR_DISABLED'>${LABEL_DND}${THIN_SPACE}</span>"
+            full_text="${label}"
         else
-            label="<span color='$COLOR_NO_NOTIFICATIONS'>$LABEL_NO_NOTIFICATIONS</span>"
-            full_text="${label} ${count}"
+            # Normal mode
+            if [[ "$count" -gt 0 ]]; then
+                label="<span color='$COLOR_NOTIFICATIONS'>${LABEL_NOTIFICATIONS}</span>"
+                full_text="${label}  ${count}"
+            else
+                label="<span color='$COLOR_NO_NOTIFICATIONS'>${LABEL_NO_NOTIFICATIONS}</span>"
+                full_text="${label} ${count}"
+            fi
         fi
     fi
 fi
