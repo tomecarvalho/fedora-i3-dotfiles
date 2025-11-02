@@ -61,7 +61,7 @@ else
                 full_text="${label}  ${count}"
             else
                 label="<span color='$COLOR_NO_NOTIFICATIONS'>${LABEL_NO_NOTIFICATIONS}</span>"
-                full_text="${label} ${count}"
+                full_text="${label}  ${count}"
             fi
         fi
     fi
