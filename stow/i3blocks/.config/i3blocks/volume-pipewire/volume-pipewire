@@ -11,7 +11,7 @@ AUDIO_MED_SYMBOL=${AUDIO_MED_SYMBOL:-'  '}
 AUDIO_LOW_THRESH=${AUDIO_LOW_THRESH:-0}
 AUDIO_LOW_SYMBOL=${AUDIO_LOW_SYMBOL:-'  '}
 
-AUDIO_MUTED_SYMBOL=${AUDIO_MUTED_SYMBOL:-'  '}
+AUDIO_MUTED_SYMBOL=${AUDIO_MUTED_SYMBOL:-'  '}
 
 AUDIO_DELTA=${AUDIO_DELTA:-5}
 
@@ -198,15 +198,16 @@ sed 's/.*= "\(.*\)".*/\1/')
     # Apply device name alias if configured
     NAME=$(apply_device_alias "$NAME")
 
-    # Always show the symbol for the current volume threshold, even when muted
-    SYMB=$AUDIO_HIGH_SYMBOL
-    [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMB=$AUDIO_MED_SYMBOL
-    [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
+    # Choose symbol based on mute status first, then volume threshold
     if [[ $MUTED =~ "no" ]] ; then
+        SYMB=$AUDIO_HIGH_SYMBOL
+        [[ $VOL -le $AUDIO_MED_THRESH ]] && SYMB=$AUDIO_MED_SYMBOL
+        [[ $VOL -le $AUDIO_LOW_THRESH ]] && SYMB=$AUDIO_LOW_SYMBOL
         COLOR=""
         # Color only the icon to indicate interactivity
         SYMB="<span foreground='${ICON_INTERACTABLE_COLOR:-#83a598}'>${SYMB}</span>"
     else
+        SYMB=$AUDIO_MUTED_SYMBOL
         COLOR=$MUTED_COLOR
     fi
 
