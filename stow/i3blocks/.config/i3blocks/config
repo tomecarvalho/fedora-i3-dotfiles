@@ -26,8 +26,7 @@ markup=pango
 COLOR_DISABLED=#7c6f64
 COLOR_ENABLED=#b8bb26
 COLOR_ICON_INTERACTABLE=#83a598
-COLOR_ICON_INFO=#fabd2f
-COLOR_ACTIVE_WINDOW=#8ec07c
+COLOR_ICON_INFO=#8ec07c
 
 [i3-focusedwindow]
 interval=persist
@@ -68,6 +67,19 @@ signal=4
 interval=60
 signal=3
 
+# Dunst notifications counter
+# Left click: pop all notifications
+# Middle click: toggle DND (Do Not Disturb)
+# Right click: clear history
+[dunst-counter]
+interval=5
+signal=6
+
+# Caffeine
+# Left click: toggle
+[caffeine]
+interval=60
+
 # Battery indicator (customised script)
 # Colour scheme: gruvbox-dark
 # Related udev rule to trigger update on status change: /etc/udev/rules.d/99-battery-status.rules
@@ -78,11 +90,6 @@ COLOR_CRITICAL=#cc241d
 COLOR_LOW=#d79921
 COLOR_MEDIUM=#98971a
 COLOR_GOOD=#689d68
-
-# Caffeine
-# Left click: toggle
-[caffeine]
-interval=60
 
 # Time and date
 # Left click: cycle through timezones
