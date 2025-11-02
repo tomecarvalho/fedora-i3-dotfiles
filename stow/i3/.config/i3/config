@@ -197,6 +197,10 @@ bindsym $mod+Ctrl+n exec --no-startup-id dunstctl set-paused toggle && pkill -RT
 # Clear dunst notifications
 bindsym $mod+Shift+n exec --no-startup-id sh -c 'dunstctl close-all && dunstctl history-clear && pkill -RTMIN+6 i3blocks'
 
+# Scratchpad
+bindsym $mod+m scratchpad show
+bindsym $mod+Shift+m move scratchpad
+
 # Resize mode
 mode "Resize" {
   bindsym $left resize shrink width 10 px or 10 ppt
