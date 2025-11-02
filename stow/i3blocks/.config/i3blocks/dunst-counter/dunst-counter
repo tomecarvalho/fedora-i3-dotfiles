@@ -4,7 +4,8 @@ set -euo pipefail
 
 # i3blocks dunst-counter
 # Shows the number of notifications in dunst's history.
-# Left click (BUTTON=1): pop the last notification from history.
+# Left click: pop all notifications from history
+# Right click: clear all history
 
 # Customization via environment variables:
 # - LABEL_NO_NOTIFICATIONS: icon when count is 0 (default: "󰂚")
@@ -19,10 +20,18 @@ COLOR_DISABLED="${COLOR_DISABLED:-#7c6f64}"
 COLOR_NO_NOTIFICATIONS="${COLOR_NO_NOTIFICATIONS:-#83a598}"
 COLOR_NOTIFICATIONS="${COLOR_NOTIFICATIONS:-#fabd2f}"
 
-# Handle click: left button pops a notification
+# Handle clicks
 if [[ "${BLOCK_BUTTON:-}" == "1" ]]; then
+	# Left click: pop all notifications
 	if command -v dunstctl >/dev/null 2>&1; then
-		dunstctl history-pop >/dev/null 2>&1 || true
+		while [[ "$(dunstctl count history 2>/dev/null || echo 0)" -gt 0 ]]; do
+			dunstctl history-pop >/dev/null 2>&1 || break
+		done
+	fi
+elif [[ "${BLOCK_BUTTON:-}" == "3" ]]; then
+	# Right click: clear all history
+	if command -v dunstctl >/dev/null 2>&1; then
+		dunstctl history-clear >/dev/null 2>&1 || true
 	fi
 fi
 

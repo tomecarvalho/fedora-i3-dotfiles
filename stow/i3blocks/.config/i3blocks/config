@@ -68,9 +68,11 @@ interval=60
 signal=3
 
 # Dunst notifications counter
-# Left click: pop last notification
+# Left click: pop all notifications
+# Right click: clear history
 [dunst-counter]
-interval=2
+interval=5
+signal=6
 
 # Caffeine
 # Left click: toggle

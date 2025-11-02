@@ -64,9 +64,6 @@ $xnsi /usr/libexec/xfce-polkit
 $xnsi dbus-update-activation-environment --all
 $xnsi ~/.config/i3/scripts/gnome-keyring.sh
 
-# dunst: Notifications
-$xnsi dunst
-
 # picom: Compositor
 $xansi picom --config ~/.config/picom/picom.conf
 
@@ -185,13 +182,18 @@ bindsym $mod+Shift+c reload
 # Restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
-# Screenshot with xfce4-screenshooter
+# Screenshot with xfce4-screenshooterN
 # Print: Full popup with all options
 # Mod Print: Quick area screenshot to clipboard
 # Mod Shift Print: Quick window screenshot to clipboard
 bindsym Print exec xfce4-screenshooter
 bindsym $mod+Print exec xfce4-screenshooter --region --clipboard
 bindsym $mod+Shift+Print exec xfce4-screenshooter --window --clipboard
+
+# Pop the most recent dunst notification
+bindsym $mod+n exec --no-startup-id dunstctl history-pop && pkill -RTMIN+6 i3blocks
+# Clear dunst notifications
+bindsym $mod+Shift+n exec --no-startup-id sh -c 'dunstctl close-all && dunstctl history-clear && pkill -RTMIN+6 i3blocks'
 
 # Resize mode
 mode "Resize" {
