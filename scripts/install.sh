@@ -14,6 +14,7 @@ ALL_STEPS=(
   rpm_fusion
   copr
   dnf_install
+  submodules
   flathub
   flatpak_install
   snap_install
@@ -84,6 +85,11 @@ dnf_install() {
 
   echo "[dnf_install] Replacing ffmpeg-free with ffmpeg"
   sudo dnf in -y ffmpeg --allowerasing
+}
+
+submodules() {
+  echo "[submodules] Update git submodules"
+  git submodule update --init --recursive
 }
 
 flathub() {
