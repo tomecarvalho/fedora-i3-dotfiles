@@ -22,6 +22,7 @@ ALL_STEPS=(
   vscode
   chrome
   node
+  docker
   pnpm_install
   oh_my_zsh
   default_zsh
