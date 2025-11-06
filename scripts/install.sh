@@ -32,6 +32,7 @@ ALL_STEPS=(
   gsettings_theme
   lightdm
   snapper
+  stow
 )
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -395,6 +396,28 @@ snapper() {
   echo "[snapper] Enabling snapper-timeline.timer and snapper-cleanup.timer"
   sudo systemctl enable --now snapper-timeline.timer
   sudo systemctl enable --now snapper-cleanup.timer
+}
+
+stow() {
+  echo "[stow] Stow dotfiles configurations"
+
+  STOW_DIR="$SCRIPT_DIR/../stow"
+  STOW_ROOT_DIR="$SCRIPT_DIR/../stow-root"
+
+  if [[ ! -d "$STOW_DIR" ]]; then
+    echo "[stow] Stow directory not found at $STOW_DIR, skipping"
+  else
+    echo "[stow] Stowing user configurations from $STOW_DIR"
+    rm -rf ~/.bashrc ~/.zshrc ~/.oh-my-zsh/custom
+    stow --target="$HOME" *
+  fi
+
+  if [[ ! -d "$STOW_ROOT_DIR" ]]; then
+    echo "[stow] Stow root configurations not found at $STOW_ROOT_DIR, skipping"
+  else
+    echo "[stow] Stowing root configurations from $STOW_ROOT_DIR"
+    sudo stow --target=/ *
+  fi
 }
 
 usage() {
