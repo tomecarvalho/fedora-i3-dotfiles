@@ -25,6 +25,7 @@ ALL_STEPS=(
   docker
   pnpm_install
   oh_my_zsh
+  starship
   jetbrains_mono_font
   inter_font
   gsettings_theme
@@ -177,6 +178,19 @@ oh_my_zsh() {
   if ! command -v starship &> /dev/null; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y
   fi
+}
+
+starship() {
+  echo "[starship] Install Starship prompt"
+
+  if command -v starship >/dev/null 2>&1; then
+    echo "[starship] starship is already installed"
+    return
+  fi
+
+  echo "[starship] Installing starship via official installer"
+  # Use official installer in unattended mode
+  curl -sS https://starship.rs/install.sh | sh -s -- -y
 }
 
 jetbrains_mono_font() {
