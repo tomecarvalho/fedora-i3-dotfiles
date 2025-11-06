@@ -23,6 +23,7 @@ libreoffice-calc
 libreoffice-impress
 libreoffice-writer
 lxappearance
+ncdu
 neovim
 numlockx
 perl-Env
