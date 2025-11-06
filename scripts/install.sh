@@ -295,7 +295,21 @@ pnpm_install() {
   fi
 
   echo "[pnpm_install] Installing PNPM packages..."
-  pnpm add -g --filter global --workspace-root --requirement "$PKG_FILE"
+  # Read package list and install each package globally.
+  # Using per-package installs avoids incompatible pnpm flag combinations
+  # (e.g. --workspace-root may not be used with -g/--global).
+  local packages=( $(read_package_list "$PKG_FILE") )
+
+  if [[ ${#packages[@]} -eq 0 ]]; then
+    echo "[pnpm_install] No PNPM packages to install"
+    return
+  fi
+
+  echo "[pnpm_install] Installing ${#packages[@]} PNPM packages globally..."
+  for pkg in "${packages[@]}"; do
+    echo "[pnpm_install] Installing $pkg"
+    pnpm add -g "$pkg"
+  done
 }
 
 docker() {
