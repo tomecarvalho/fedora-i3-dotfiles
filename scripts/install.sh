@@ -25,7 +25,6 @@ ALL_STEPS=(
   docker
   pnpm_install
   oh_my_zsh
-  default_zsh
   jetbrains_mono_font
   inter_font
   gsettings_theme
@@ -178,17 +177,6 @@ oh_my_zsh() {
   if ! command -v starship &> /dev/null; then
     curl -sS https://starship.rs/install.sh | sh -s -- -y
   fi
-}
-
-default_zsh() {
-  echo "[default_zsh] Make zsh the default shell"
-
-  if ! command -v zsh &> /dev/null; then
-    echo "zsh is not installed. Please install zsh first." >&2
-    exit 1
-  fi
-
-  chsh -s "$(command -v zsh)"
 }
 
 jetbrains_mono_font() {
