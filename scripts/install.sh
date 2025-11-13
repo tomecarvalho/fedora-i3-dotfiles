@@ -180,17 +180,14 @@ oh_my_zsh() {
     rm -rf "$HOME/.oh-my-zsh/custom"
     echo "[oh_my_zsh] [!] The rm command to remove ~/.oh-my-zsh/custom may be executed before oh-my-zsh finishes its installation. In that case, make sure to manually run 'rm -rf ~/.oh-my-zsh/custom' after this script completes."
   fi
-
-  # Install starship
-  if ! command -v starship &> /dev/null; then
-    curl -sS https://starship.rs/install.sh | sh -s -- -y
-  fi
 }
 
 starship() {
   echo "[starship] Install Starship prompt"
 
-  if command -v starship >/dev/null 2>&1; then
+  # Use 'type -P' to detect an actual executable in PATH and avoid matching this
+  # shell function named 'starship', which causes false positives with 'command -v'.
+  if type -P starship >/dev/null 2>&1; then
     echo "[starship] starship is already installed"
     return
   fi
